@@ -1,6 +1,6 @@
 {
-  "name": "worx-landroid-nodejs",
-  "version": "0.0.1",
+  "name": "worx-landroid-domoticz",
+  "version": "0.1.0",
   "private": true,
   "dependencies": {
     "najax": "~0.1.5",
