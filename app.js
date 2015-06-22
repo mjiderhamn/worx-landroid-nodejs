@@ -1,5 +1,5 @@
 // Settings
-var config = require('./config').config;
+var config = require('./config');
 
 // https://github.com/najaxjs/najax
 var najax = require('najax');
