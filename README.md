@@ -27,7 +27,7 @@ percentage of your mower with the charts made available via the Domoticz GUI.
 4. Clone this Git repo - `git clone https://github.com/mjiderhamn/worx-landroid-domoticz.git`
   (First install [Git](http://git-scm.com/) if not already installed)
 5. In the cloned directory, run `npm install` to download dependencies
-6. Edit the cloned `app.js`
+6. Edit the cloned `config.js`
   1. Set the correct URL to the MQTT broker in `mqttBrokerUrl`
   2. Set `serverAndPort` to the IP/hostname '`:`' port (unless port 80) where the Node.JS will reach the Landroid,
      such as `192.168.0.5` or `mylandroid.dynamic-ip-provider.com:8080` (assuming have done Port Forwarding in your

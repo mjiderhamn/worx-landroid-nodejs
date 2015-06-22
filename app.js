@@ -1,8 +1,5 @@
 // Settings
-var mqttBrokerUrl = 'mqtt://localhost'; // TODO Enter URL to MQTT broker (Mosquitto) - mqtt://test.mosquitto.org may be used for testing
-var serverAndPort = "ip:port"; // // TODO Enter your IP/server name here
-var pinCode = "YOUR PIN CODE"; // TODO Enter your PIN here
-var idx = 1; // The IDX of your Domoticz device (percentage) used for the battery level
+var config = require('./config').config;
 
 // https://github.com/najaxjs/najax
 var najax = require('najax');
@@ -12,12 +9,14 @@ var mqtt = require('mqtt');
 var mqttOpts = {
   connectTimeout: 5 * 1000 // Time out after 5 seconds
 };
-var client = mqtt.connect(mqttBrokerUrl, mqttOpts);
+
+console.log("Connecting to MQTT broker at " + config.mqttBrokerUrl + "...");
+var client = mqtt.connect(config.mqttBrokerUrl, mqttOpts);
 
 /** Send battery percentage to Domoticz via MQTT */
 function sendBatteryPercentage(batteryPercentage) {
   var message = {
-    "idx": idx,
+    "idx": config.idx,
     "nvalue": 0,
     "svalue": batteryPercentage
   };
@@ -32,10 +31,10 @@ function pollStatus() {
   console.log("About to poll Landroid for status");
   
   najax({
-        url: "http://" + serverAndPort + "/jsondata.cgi",
+        url: "http://" + config.serverAndPort + "/jsondata.cgi",
         dataType: "json", // will be "application/json" in version najax 0.2.0
         username: "admin",
-        password: pinCode
+        password: config.pinCode
       },
       function (response) {
         
