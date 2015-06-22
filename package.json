@@ -1,0 +1,9 @@
+{
+  "name": "worx-landroid-nodejs",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "najax": "~0.1.5",
+    "mqtt": "~1.3.0"
+  }
+}
