@@ -102,7 +102,7 @@ Domoticz.prototype.isResponseOk = function (response) {
 
 /** Get the devices defined in Domoticz */
 Domoticz.prototype.getDevices = function(callback) {
-  this.ajax("type=devices&filter=all&order=Name", function(response) { // TODO Order?
+  this.ajax("type=devices&filter=all", function(response) {
     callback(response ? response.result : null);
   });
 };
@@ -170,9 +170,20 @@ Domoticz.prototype.initDevices = function() {
 Domoticz.prototype.createDevice = function(name) {
   // idx=0 causes auto generation of new idx
   var self = this;
+  
+  // TODO We must wait for the previous call to finish, or they will get the same ID!
+  this.createVirtualSensor(name, function(idx) {
+    self.idxByName[name] = idx;
+    self.setUsed(idx, name);
+  });
+};
+
+Domoticz.prototype.createVirtualSensor = function (name, callback) {
   var type = ALL_DEVICES[name];
   if(! type)
     throw "Cannot create device without type: " + name;
+
+  var self = this;
   
   console.log("Creating device " + name + " with type " + type);
   
@@ -181,7 +192,9 @@ Domoticz.prototype.createDevice = function(name) {
     if(! self.isResponseOk(response))
       throw "Error creating sensor '" + name + "': " + status;
     else {
+      console.log("New device created, looking for its idx");
       self.getIdxToDevice(function(idxToDevice) {
+        // console.log("Devices after create: " + JSON.stringify(idxToDevice));
         var idxToUse = -1;
         Object.keys(idxToDevice).forEach(function (idx) {
           idx = parseInt(idx);
@@ -194,9 +207,7 @@ Domoticz.prototype.createDevice = function(name) {
         });
         
         console.log("New device for " + name + " idx: " + idxToUse);
-        self.idxByName[name] = idxToUse;
-        
-        self.setUsed(idxToUse, name);
+        callback(idxToUse);
       });
     }
   });
@@ -211,10 +222,13 @@ Domoticz.prototype.setUsed = function (idx, name) {
   var self = this;
   var subtype = (ALL_DEVICES[name] == TYPE_RFXMETER) ? "&switchtype=3" : ""; // 3 = Counter
   self.ajax("type=setused&idx=" + idx + "&name=" + encodeURIComponent(name) + subtype + "&used=true", function(response) {
+    // This seems to always return error, even though the intended operation is performed
+    /*
     if(self.isResponseOk(response))
       console.log("Enabled idx " + idx + ": " + name);
     else
       console.error("Error making " + idx + " used");
+    */
   });
 };
 

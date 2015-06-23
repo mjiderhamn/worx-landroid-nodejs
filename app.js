@@ -37,5 +37,7 @@ client.on('connect', function () {
     domoticz.setCharging(charging);
   };
   
-  landroid.pollEvery(60); // Poll every 60 seconds
+  setTimeout(function() {
+    landroid.pollEvery(60); // Poll every 60 seconds
+  }, 5 * 1000); // Wait 5 seconds to allow Domoticz to initialize TODO handle pre-init calls
 });
