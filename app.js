@@ -1,8 +1,6 @@
 // Settings
 var config = require('./config');
-
-// https://github.com/najaxjs/najax
-var najax = require('najax');
+var Landroid = require('./landroid');
 
 // https://www.npmjs.com/package/mqtt
 var mqtt = require('mqtt');
@@ -26,30 +24,15 @@ function sendBatteryPercentage(batteryPercentage) {
   });
 }
 
-/** Poll current status from the Landroid */
-function pollStatus() {
-  console.log("About to poll Landroid for status");
-  
-  najax({
-        url: "http://" + config.serverAndPort + "/jsondata.cgi",
-        dataType: "json", // will be "application/json" in version najax 0.2.0
-        username: "admin",
-        password: config.pinCode
-      },
-      function (response) {
-        
-        if(response) {
-          var batteryPercentage = response.perc_batt;
-          console.log("Response from Landroid, batteryPercentage: " + batteryPercentage);
-          sendBatteryPercentage(batteryPercentage);
-        }
-        else
-          console.log("No response!");
-      });
-}
+var landroid = new Landroid(config);
 
 client.on('connect', function () {
   console.log("Connected to MQTT broker - scheduling polling");
-  pollStatus(); // First poll immediately
-  setInterval(pollStatus, 60 * 1000); // Poll every minute
+  
+  landroid.onBatteryPercent = function(batteryPercentage) { // TODO Improve readability
+    console.log("To be sent to MQTT, batteryPercentage: " + batteryPercentage);
+    sendBatteryPercentage(batteryPercentage);
+  };
+  
+  landroid.pollEvery(5); // Poll every 5 seconds
 });
