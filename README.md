@@ -154,7 +154,7 @@ is inlined as comments.
     "enab_bordo": 1, // Enable edge cutting
     "g_sett_attuale": 1, // Is charging???
     "g_ultimo_bordo": 0,
-    "ore_movimento": 626, // "Hours moving"??? 
+    "ore_movimento": 626, // Total time the mower has been mowing, expressed in 0,1 h 
     "percent_programmatore": 50, // Percent increase of the automatic area setting
     "indice_area": 9,
     "tipo_lando": 8,
