@@ -138,15 +138,20 @@ Domoticz.prototype.initDevices = function() {
   var self = this;
   
   this.getIdxToDevice(function (idxToDevice) {
-    // console.log("All devices: " + JSON.stringify(idxToDevice));
-    Object.keys(idxToDevice).forEach(function (idx) {
-      self.idxByName[idxToDevice[idx].Name] = parseInt(idx);
-    });
-    
-    console.log("Devices identified: " + JSON.stringify(self.idxByName));
-    
-    var names = Object.keys(self.idxByName); 
-    Object.keys(ALL_DEVICES).forEach(function(deviceName) {
+    if(idxToDevice) {
+      // console.log("All devices: " + JSON.stringify(idxToDevice));
+      Object.keys(idxToDevice).forEach(function (idx) {
+        self.idxByName[idxToDevice[idx].Name] = parseInt(idx);
+      });
+
+      console.log("Devices identified: " + JSON.stringify(self.idxByName));
+
+    }
+    else
+      console.log("No existing devices found");
+
+    var names = Object.keys(self.idxByName);
+    Object.keys(ALL_DEVICES).forEach(function (deviceName) {
       if(names.indexOf(deviceName) < 0) {
         console.log("Device missing, needs to be created: " + deviceName);
         self.createDevice(deviceName);
