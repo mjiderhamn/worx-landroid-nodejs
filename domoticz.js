@@ -16,7 +16,7 @@ var TYPE_PERCENTAGE = 2;
 
 var ALL_DEVICES = {};
 ALL_DEVICES[BATTERY_PERCENT_DEVICE_NAME] = TYPE_PERCENTAGE;
-ALL_DEVICES[TOTAL_MOWING_MINUTES_DEVICE_NAME] = TYPE_PERCENTAGE; // TODO Should be a counter
+// TODO ALL_DEVICES[TOTAL_MOWING_MINUTES_DEVICE_NAME] = TYPE_PERCENTAGE; // TODO Should be a counter
 
 // TODO Auto identify or generate IDX + allow overriding
 // TODO addhardware
@@ -93,14 +93,17 @@ Domoticz.prototype.getIdxToDeviceName = function (callback) {
   });
 }; 
 
+/** Find or create Domoticz Virtual Sensor Devices to be used */
 Domoticz.prototype.initDevices = function() {
+  console.log("Initializing devices on " + this.domoticzUrl);
+  
   var self = this;
   
   this.getIdxToDeviceName(function (idxToName) {
     console.log("IDXs: " + JSON.stringify(idxToName));
     var idxs = Object.keys(idxToName);
     idxs.forEach(function (idx) {
-      self.idxByName[idxToName[idx]] = idx;
+      self.idxByName[idxToName[idx]] = parseInt(idx);
     });
     
     console.log("Devices identified: " + JSON.stringify(self.idxByName));
@@ -110,6 +113,11 @@ Domoticz.prototype.initDevices = function() {
       if(names.indexOf(deviceName) < 0) {
         console.log("Device missing, needs to be created: " + deviceName);
         self.createDevice(deviceName);
+      }
+      else {
+        var idx = self.idxByName[deviceName];
+        console.log("Making sure idx " + idx + " '" + deviceName + "' is is use");
+        self.setUsed(idx);
       }
     });
   });
@@ -124,19 +132,52 @@ Domoticz.prototype.createDevice = function(name) {
   
   console.log("Creating device " + name + " with type " + type);
   
+  // TODO We must wait for the previous call to finish, or they will get the same ID!
   this.ajax("type=createvirtualsensor&idx=0&sensortype=" + type, function (response) { // TODO
     var status = response ? response.status : null;
     if(status != "OK")
       throw "Error creating sensor '" + name + "': " + status;
     else {
-      // TODO Find new device IDX
-      
-      //self.ajax("type=setused&idx=DEVICE_ID&name=" + name /* TODO URL encode */ + "&used=true", function() {
-      //  
-      //});
-      // TODO
+      self.getIdxToDeviceName(function(idxToDeviceName) {
+        var idxToUse = -1;
+        Object.keys(idxToDeviceName).forEach(function (idx) {
+          idx = parseInt(idx);
+          if(idxToDeviceName[idx] == "Unknown") {
+            if(idx > idxToUse) {
+              console.log("Found \"Unknown\" device with idx: " + idx);
+              idxToUse = idx;
+            }
+          }
+        });
+        
+        console.log("New device for " + name + " idx: " + idxToUse);
+        self.idxByName[name] = idxToUse.toString();
+        
+        self.setUsed(idxToUse, name);
+      });
     }
   });
+};
+
+/**
+ * Make device in use and (re)set the name
+ * @param idx
+ * @param name
+ */
+Domoticz.prototype.setUsed = function (idx, name) {
+  var self = this;
+  self.ajax("type=setused&idx=" + idx + "&name=" + name /* TODO URL encode */ + "&used=true", function() {
+    console.log("Enabled idx " + idx + ": " + name);
+    // TODO Check OK
+  });
+};
+
+Domoticz.prototype.sendBatteryPercentage = function(batteryPercentage) {
+  var idx = this.idxByName[BATTERY_PERCENT_DEVICE_NAME];
+  if(! idx)
+    throw "No idx for " + BATTERY_PERCENT_DEVICE_NAME;
+  
+  this.sendPercent(idx, batteryPercentage);
 };
 
 module.exports = Domoticz;
