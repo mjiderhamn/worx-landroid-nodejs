@@ -74,13 +74,13 @@ is inlined as comments.
         0, // Set to 1 when "Outside working area" 
         0,
         0, // Set to 1 when "Outside working area"
+        0, // Set to 1 when "Lifted up"
+        0,
+        0, // Set to 1 when "Lifted up"
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        0, // Set to 1 when "Lifted up"
         0,
         0,
         0,
