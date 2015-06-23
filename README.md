@@ -22,7 +22,7 @@ percentage of your mower with the charts made available via the Domoticz GUI.
   (First install [Git](http://git-scm.com/) if not already installed)
 5. In the cloned directory, run `npm install` to download dependencies
 6. Edit the cloned [`config.js`](config.js). Should be self explanatory.  
-7. Start the application by running `node app.js`  
+7. Start the application by running `run.bat` (If you are not on Windows, you know what to do...)  
 
 ## Response
 
@@ -60,19 +60,19 @@ is inlined as comments.
         0
     ],
     "allarmi": [ // Alarms
-        0,
-        0,
+        0, // "blade blocked"
+        0, // "repositioning error"
         0, // Set to 1 when "Outside working area" 
-        0,
+        0, // "blade blocked"
         0, // Set to 1 when "Outside working area"
         0, // Set to 1 when "Lifted up"
+        0, // "alarm"
+        0, // Set to 1 when "Lifted up"; "upside down"?
         0,
-        0, // Set to 1 when "Lifted up"
-        0,
-        0,
-        0,
-        0, // Set to 1 when "Lifted up"
-        0,
+        0, // "collision sensor blocked"
+        0, // "mower tilted"
+        0, // Set to 1 when "Lifted up"; "charge error"?
+        0, // "battery error"
         0,
         0,
         0,
@@ -98,17 +98,17 @@ is inlined as comments.
         0,
         0,
         1,
-        0,
+        0, // "charging"
         0,
         1,
         1,
         1,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        0, // "start"
+        0, // "stop"
+        0, // "charging completed"
+        0, // "manual stop"
+        0, // "going home"
         0,
         0,
         0,

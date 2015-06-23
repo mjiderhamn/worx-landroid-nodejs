@@ -13,10 +13,11 @@ var TOTAL_MOWING_MINUTES_DEVICE_NAME = "Worx_Landroid_Mowing_Minutes";
 
 // Constants for sensor types, see https://www.domoticz.com/wiki/Domoticz_API/JSON_URL%27s#Create_a_Virtual_Sensor
 var TYPE_PERCENTAGE = 2;
+var TYPE_RFXMETER = 113;
 
 var ALL_DEVICES = {};
 ALL_DEVICES[BATTERY_PERCENT_DEVICE_NAME] = TYPE_PERCENTAGE;
-// TODO ALL_DEVICES[TOTAL_MOWING_MINUTES_DEVICE_NAME] = TYPE_PERCENTAGE; // TODO Should be a counter
+// ALL_DEVICES[TOTAL_MOWING_MINUTES_DEVICE_NAME] = TYPE_RFXMETER;
 
 // TODO Auto identify or generate IDX + allow overriding
 // TODO addhardware
@@ -66,7 +67,18 @@ Domoticz.prototype.ajax = function(query, callback) {
   najax({
       url: self.domoticzUrl + "/json.htm?" + query,
       dataType: "json" // will be "application/json" in version najax 0.2.0
-    }, callback);
+    }, 
+    function(response){
+      if(! self.isResponseOk(response))
+        console.error("Response to " + query + ": " + JSON.stringify(response));// Enable for more logging
+      // else console.log("Response to " + query + ": " + JSON.stringify(response));// Enable for more logging
+      callback(response);
+  });
+};
+
+/** Check if JSON response seems ok */
+Domoticz.prototype.isResponseOk = function (response) {
+  return response && response.status == "OK";
 };
 
 /** Get the devices defined in Domoticz */
@@ -76,14 +88,14 @@ Domoticz.prototype.getDevices = function(callback) {
   });
 };
 
-Domoticz.prototype.getIdxToDeviceName = function (callback) {
+Domoticz.prototype.getIdxToDevice = function (callback) {
   var self = this;
   this.getDevices(function(devices) {
     var output = {}; // Map from Idx to device name will be the output
 
     if(devices) {
       devices.forEach(function (device) {
-        output[device.idx] = device.Name;
+        output[device.idx] = device;
       });
       callback(output);
     }
@@ -97,13 +109,19 @@ Domoticz.prototype.getIdxToDeviceName = function (callback) {
 Domoticz.prototype.initDevices = function() {
   console.log("Initializing devices on " + this.domoticzUrl);
   
+  // TODO addhardware if not found
+  /*
+  this.ajax("type=gethardwaretypes", function (response) {
+    console.log("Hardware types: " + JSON.stringify(response));
+  });
+  */
+  
   var self = this;
   
-  this.getIdxToDeviceName(function (idxToName) {
-    console.log("IDXs: " + JSON.stringify(idxToName));
-    var idxs = Object.keys(idxToName);
-    idxs.forEach(function (idx) {
-      self.idxByName[idxToName[idx]] = parseInt(idx);
+  this.getIdxToDevice(function (idxToDevice) {
+    console.log("IDXs: " + JSON.stringify(idxToDevice));
+    Object.keys(idxToDevice).forEach(function (idx) {
+      self.idxByName[idxToDevice[idx].Name] = parseInt(idx);
     });
     
     console.log("Devices identified: " + JSON.stringify(self.idxByName));
@@ -116,8 +134,10 @@ Domoticz.prototype.initDevices = function() {
       }
       else {
         var idx = self.idxByName[deviceName];
-        console.log("Making sure idx " + idx + " '" + deviceName + "' is is use");
-        self.setUsed(idx);
+        if(! idxToDevice[idx].Used) {
+          console.log("Making sure idx " + idx + " '" + deviceName + "' is use");
+          self.setUsed(idx, deviceName);
+        }
       }
     });
   });
@@ -134,15 +154,14 @@ Domoticz.prototype.createDevice = function(name) {
   
   // TODO We must wait for the previous call to finish, or they will get the same ID!
   this.ajax("type=createvirtualsensor&idx=0&sensortype=" + type, function (response) { // TODO
-    var status = response ? response.status : null;
-    if(status != "OK")
+    if(! self.isResponseOk(response))
       throw "Error creating sensor '" + name + "': " + status;
     else {
-      self.getIdxToDeviceName(function(idxToDeviceName) {
+      self.getIdxToDevice(function(idxToDevice) {
         var idxToUse = -1;
-        Object.keys(idxToDeviceName).forEach(function (idx) {
+        Object.keys(idxToDevice).forEach(function (idx) {
           idx = parseInt(idx);
-          if(idxToDeviceName[idx] == "Unknown") {
+          if(idxToDevice[idx].Name == "Unknown") {
             if(idx > idxToUse) {
               console.log("Found \"Unknown\" device with idx: " + idx);
               idxToUse = idx;
@@ -151,7 +170,7 @@ Domoticz.prototype.createDevice = function(name) {
         });
         
         console.log("New device for " + name + " idx: " + idxToUse);
-        self.idxByName[name] = idxToUse.toString();
+        self.idxByName[name] = idxToUse;
         
         self.setUsed(idxToUse, name);
       });
@@ -166,16 +185,19 @@ Domoticz.prototype.createDevice = function(name) {
  */
 Domoticz.prototype.setUsed = function (idx, name) {
   var self = this;
-  self.ajax("type=setused&idx=" + idx + "&name=" + name /* TODO URL encode */ + "&used=true", function() {
-    console.log("Enabled idx " + idx + ": " + name);
-    // TODO Check OK
+  var subtype = (ALL_DEVICES[name] == TYPE_RFXMETER) ? "&subtype=3" : ""; // Counter
+  self.ajax("type=setused&idx=" + idx + "&name=" + name /* TODO URL encode */ + "&used=true" + subtype, function(response) {
+    if(self.isResponseOk(response))
+      console.log("Enabled idx " + idx + ": " + name);
+    else
+      console.error("Error making " + idx + " used");
   });
 };
 
 Domoticz.prototype.sendBatteryPercentage = function(batteryPercentage) {
   var idx = this.idxByName[BATTERY_PERCENT_DEVICE_NAME];
   if(! idx)
-    throw "No idx for " + BATTERY_PERCENT_DEVICE_NAME;
+    throw ("No idx for " + BATTERY_PERCENT_DEVICE_NAME);
   
   this.sendPercent(idx, batteryPercentage);
 };
