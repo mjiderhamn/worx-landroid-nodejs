@@ -13,14 +13,26 @@ var najax = require('najax');
 var DEVICE_NAME_PREFIX = "Worx_Landroid_";
 var BATTERY_PERCENT_DEVICE_NAME = DEVICE_NAME_PREFIX + "Battery"; 
 var TOTAL_MOWING_HOURS_DEVICE_NAME = DEVICE_NAME_PREFIX + "Mowing_Hours";
+var ALERT_DEVICE_NAME = DEVICE_NAME_PREFIX + "Alert";
+// var MESSAGE_DEVICE_NAME = DEVICE_NAME_PREFIX + "Message";
 
 // Constants for sensor types, see https://www.domoticz.com/wiki/Domoticz_API/JSON_URL%27s#Create_a_Virtual_Sensor
 var TYPE_PERCENTAGE = 2;
+var TYPE_TEXT = 5;
+var TYPE_ALERT = 7;
 var TYPE_RFXMETER = 113;
 
 var ALL_DEVICES = {};
 ALL_DEVICES[BATTERY_PERCENT_DEVICE_NAME] = TYPE_PERCENTAGE;
 ALL_DEVICES[TOTAL_MOWING_HOURS_DEVICE_NAME] = TYPE_RFXMETER;
+ALL_DEVICES[ALERT_DEVICE_NAME] = TYPE_ALERT;
+// ALL_DEVICES[MESSAGE_DEVICE_NAME] = TYPE_TEXT;
+
+var LEVEL_GRAY = 0;
+var LEVEL_GREEN = 1;
+var LEVEL_YELLOW = 2;
+var LEVEL_ORANGE = 3;
+var LEVEL_RED = 4;
 
 // TODO addhardware
 // https://github.com/domoticz/domoticz/blob/master/main/WebServer.cpp#L364
@@ -42,21 +54,22 @@ function Domoticz(options, client) {
 /** 
  * Send battery percentage to Domoticz via MQTT
  * @param name Name of device to update
- * @param value The percentage to send
+ * @param svalue The string value to send
+ * @param nvalue Optional numeric value to send
  * */
-Domoticz.prototype.sendStringValue = function(name, value) {
+Domoticz.prototype.sendValue = function(name, svalue, nvalue) {
   var idx = this.idxByName[name];
   if(! idx)
     throw ("No idx for " + name);
   
   var message = {
     "idx": idx,
-    "nvalue": 0,
-    "svalue": value ? value.toString() : ""
+    "nvalue": nvalue ? nvalue : 0,
+    "svalue": svalue ? svalue.toString() : ""
   };
 
   this.client.publish('domoticz/in', JSON.stringify(message), /* mqttOpts, */ function () {
-    console.log("Done publishing value " +  value + " to idx " + idx );
+    // console.log("Done publishing " + JSON.stringify(message) + " to idx " + idx );
   });
 };
 
@@ -192,7 +205,7 @@ Domoticz.prototype.createDevice = function(name) {
 Domoticz.prototype.setUsed = function (idx, name) {
   var self = this;
   var subtype = (ALL_DEVICES[name] == TYPE_RFXMETER) ? "&switchtype=3" : ""; // 3 = Counter
-  self.ajax("type=setused&idx=" + idx + "&name=" + name /* TODO URL encode */ + subtype + "&used=true", function(response) {
+  self.ajax("type=setused&idx=" + idx + "&name=" + encodeURIComponent(name) + subtype + "&used=true", function(response) {
     if(self.isResponseOk(response))
       console.log("Enabled idx " + idx + ": " + name);
     else
@@ -201,11 +214,28 @@ Domoticz.prototype.setUsed = function (idx, name) {
 };
 
 Domoticz.prototype.sendBatteryPercentage = function(batteryPercentage) {
-  this.sendStringValue(BATTERY_PERCENT_DEVICE_NAME, batteryPercentage);
+  this.sendValue(BATTERY_PERCENT_DEVICE_NAME, batteryPercentage);
 };
 
 Domoticz.prototype.setTotalMowingHours = function(totalMowingHours) {
-  this.sendStringValue(TOTAL_MOWING_HOURS_DEVICE_NAME, totalMowingHours);
+  this.sendValue(TOTAL_MOWING_HOURS_DEVICE_NAME, totalMowingHours);
+};
+
+/*
+Domoticz.prototype.setMessage = function(alertMessage) {
+  this.sendValue(MESSAGE_DEVICE_NAME, alertMessage);
+};
+*/
+
+Domoticz.prototype.setError = function(error) {
+  this.sendValue(ALERT_DEVICE_NAME, error ? error : "Unknown error", LEVEL_RED);
+};
+
+Domoticz.prototype.setCharging = function(charging) {
+  if(charging)
+    this.sendValue(ALERT_DEVICE_NAME, "Charging", LEVEL_GREEN);
+  else
+    this.sendValue(ALERT_DEVICE_NAME, "-", LEVEL_GRAY);
 };
 
 module.exports = Domoticz;

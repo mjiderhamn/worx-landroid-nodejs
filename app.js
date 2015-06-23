@@ -30,5 +30,12 @@ client.on('connect', function () {
     domoticz.setTotalMowingHours(totalMowingHours);
   };
   
+  landroid.setError = function(error) {
+    domoticz.setError(error);
+  };
+  landroid.setCharging = function(charging) {
+    domoticz.setCharging(charging);
+  };
+  
   landroid.pollEvery(60); // Poll every 60 seconds
 });
