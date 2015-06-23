@@ -150,32 +150,40 @@ Domoticz.prototype.initDevices = function() {
     else
       console.log("No existing devices found");
 
-    var names = Object.keys(self.idxByName);
-    Object.keys(ALL_DEVICES).forEach(function (deviceName) {
-      if(names.indexOf(deviceName) < 0) {
-        console.log("Device missing, needs to be created: " + deviceName);
-        self.createDevice(deviceName);
-      }
-      else {
-        var idx = self.idxByName[deviceName];
-        if(! idxToDevice[idx].Used) {
-          console.log("Making sure idx " + idx + " '" + deviceName + "' is use");
-          self.setUsed(idx, deviceName);
-        }
-      }
-    });
+    self.createMissingDevices(0, idxToDevice);
   });
 };
 
-Domoticz.prototype.createDevice = function(name) {
-  // idx=0 causes auto generation of new idx
+Domoticz.prototype.createMissingDevices = function(index, idxToDevice) {
   var self = this;
   
-  // TODO We must wait for the previous call to finish, or they will get the same ID!
-  this.createVirtualSensor(name, function(idx) {
-    self.idxByName[name] = idx;
-    self.setUsed(idx, name);
-  });
+  // NOTE! That we must wait until the previous device has finished processing, or there will be conflicts
+
+  var deviceNames = Object.keys(self.idxByName);
+  var allDeviceNames = Object.keys(ALL_DEVICES);
+  if(index < allDeviceNames.length) {
+    var deviceName = allDeviceNames[index];
+    console.log("Making sure device exists: " + deviceName);
+    if(deviceNames.indexOf(deviceName) < 0) { // Does not exist
+      console.log("Device missing, needs to be created: " + deviceName);
+      
+      self.createVirtualSensor(deviceName, function(idx) {
+        self.idxByName[deviceName] = idx;
+        self.setUsed(idx, deviceName);
+        
+        self.createMissingDevices(index + 1, idxToDevice); // Continue with next device
+      });
+    }
+    else {
+      var idx = self.idxByName[deviceName];
+      if(! idxToDevice[idx].Used) {
+        console.log("Device exists but needs to be used: " + deviceName);
+        // console.log("Making sure idx " + idx + " '" + deviceName + "' is use");
+        self.setUsed(idx, deviceName);
+      }
+      self.createMissingDevices(index + 1, idxToDevice); // Continue with next device immediately, as there is no risk of mixup
+    }
+  }
 };
 
 Domoticz.prototype.createVirtualSensor = function (name, callback) {
@@ -187,8 +195,8 @@ Domoticz.prototype.createVirtualSensor = function (name, callback) {
   
   console.log("Creating device " + name + " with type " + type);
   
-  // TODO We must wait for the previous call to finish, or they will get the same ID!
-  this.ajax("type=createvirtualsensor&idx=0&sensortype=" + type, function (response) { // TODO
+  // idx=0 causes auto generation of new idx
+  this.ajax("type=createvirtualsensor&idx=0&sensortype=" + type, function (response) {
     if(! self.isResponseOk(response))
       throw "Error creating sensor '" + name + "': " + status;
     else {
