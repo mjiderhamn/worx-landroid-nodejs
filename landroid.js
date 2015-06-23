@@ -18,7 +18,7 @@ function Landroid(config) {
 Landroid.prototype.doPollStatus = function() {
   console.log("About to poll Landroid at " + this.serverAndPort + " for status");
   
-  var landroid = this;
+  var self = this;
   
   najax({
         url: "http://" + this.serverAndPort + "/jsondata.cgi",
@@ -29,13 +29,20 @@ Landroid.prototype.doPollStatus = function() {
       function (response) {
         if(response) {
           var batteryPercentage = response.perc_batt;
-          console.log("Response from Landroid, batteryPercentage: " + batteryPercentage);
-          if(batteryPercentage && landroid.onBatteryPercent) {
-            landroid.onBatteryPercent(batteryPercentage);
+          if(!batteryPercentage) {
+            console.error("Make sure your pin code is correc!");
+          }
+          else {
+            // console.log("Response from Landroid, batteryPercentage: " + batteryPercentage);
+            self.setBatteryPercentage(batteryPercentage);
+            var totalMowingHours = parseInt(response.ore_movimento);
+            if(! isNaN(totalMowingHours)) {
+              self.setTotalMowingHours(totalMowingHours / 10); // Provided as 0,1 h
+            }
           }
         }
         else
-          console.log("No response!");
+          console.error("No response!");
       });  
 };
 
@@ -47,6 +54,16 @@ Landroid.prototype.pollEvery = function (seconds) {
   this.doPollStatus(); // First poll immediately
   var self = this;
   setInterval(function() { self.doPollStatus() }, seconds * 1000);
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+// These handlers are supposed to be overridden
+Landroid.prototype.setBatteryPercentage = function(batteryPercentage) {
+  console.log("Battery percentage: " + batteryPercentage);
+};
+
+Landroid.prototype.setTotalMowingHours = function(totalMowingHours) {
+  console.log("Total mowing hours: " + totalMowingHours);
 };
 
 module.exports = Landroid;

@@ -22,8 +22,12 @@ var landroid = new Landroid(config);
 client.on('connect', function () {
   console.log("Connected to MQTT broker - scheduling polling");
   
-  landroid.onBatteryPercent = function(batteryPercentage) { // TODO Improve readability
+  // Wire things together
+  landroid.setBatteryPercentage = function(batteryPercentage) {
     domoticz.sendBatteryPercentage(batteryPercentage);
+  };
+  landroid.setTotalMowingHours = function(totalMowingHours) {
+    domoticz.setTotalMowingHours(totalMowingHours);
   };
   
   landroid.pollEvery(60); // Poll every 60 seconds
