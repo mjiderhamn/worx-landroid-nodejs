@@ -24,5 +24,5 @@ client.on('connect', function () {
     domoticz.sendPercent(config.idx, batteryPercentage);
   };
   
-  landroid.pollEvery(5); // Poll every 5 seconds
+  landroid.pollEvery(60); // Poll every 60 seconds
 });
