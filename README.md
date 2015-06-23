@@ -8,6 +8,8 @@ percentage of your mower with the charts made available via the Domoticz GUI.
 ## Installation
 
 1. Set up some [MQTT broker/service](https://github.com/mqtt/mqtt.github.io/wiki/servers), such as [Mosquitto](http://mosquitto.org/)
+  1. Note that on Windows you may need to install OpenSSL, see http://git.eclipse.org/c/mosquitto/org.eclipse.mosquitto.git/tree/readme-windows.txt
+     linking to http://slproweb.com/products/Win32OpenSSL.html
 2. Install [Domoticz](http://domoticz.com/) on some supported hardware (PC, Raspberry Pi, ...)
   1. Set up MQTT queue as hardware
     1. Navigate to the Domoticz web GUI (defaults to [http://localhost:8080/](http://localhost:8080/))
