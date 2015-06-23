@@ -14,6 +14,12 @@ module.exports = {
   /** The PIN code to your Landroid */
   pinCode: "YOUR PIN CODE",
   
+  /** 
+   * The URL to the Domoticz server. The default setting assumes the server is running on the same unit as this app,
+   * on the default port (8080)
+   */
+  domoticzUrl: "http://localhost:8080",
+  
   /** The IDX of your Domoticz Virtual Sensor device (percentage) used for the battery level */
   idx: 1 
 };

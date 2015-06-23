@@ -1,5 +1,6 @@
-// Settings
-var config = require('./config');
+var config = require('./config'); // Read configuration
+
+// Import project modules
 var Landroid = require('./landroid');
 var Domoticz = require('./domoticz');
 
@@ -12,7 +13,9 @@ var mqttOpts = {
 console.log("Connecting to MQTT broker at " + config.mqttBrokerUrl + "...");
 var client = mqtt.connect(config.mqttBrokerUrl, mqttOpts);
 
-var domoticz = new Domoticz(client);
+var domoticz = new Domoticz(config, client);
+
+// domoticz.initDevices(); // TODO Detect and auto create devices
 
 var landroid = new Landroid(config);
 
