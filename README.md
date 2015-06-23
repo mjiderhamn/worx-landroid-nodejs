@@ -71,9 +71,9 @@ is inlined as comments.
     "allarmi": [ // Alarms
         0,
         0,
+        0, // Set to 1 when "Outside working area" 
         0,
-        0,
-        0,
+        0, // Set to 1 when "Outside working area"
         0,
         0,
         0,
