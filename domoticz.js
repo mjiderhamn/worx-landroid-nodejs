@@ -3,8 +3,11 @@
  */
 // TODO allow overriding auto generated idx
 
+// https://www.npmjs.com/package/mqtt
 var mqtt = require('mqtt');
-var MqttClient = mqtt.MqttClient;
+var mqttOpts = {
+  connectTimeout: 5 * 1000 // Time out after 5 seconds
+};
 
 // https://github.com/najaxjs/najax
 var najax = require('najax');
@@ -39,19 +42,23 @@ var LEVEL_RED = 4;
 // TODO addhardware
 // https://github.com/domoticz/domoticz/blob/master/main/WebServer.cpp#L364
 
-function Domoticz(options, client) {
-  if(client instanceof MqttClient) {
-    this.client = client;
-  }
-  else {
-    // TODO
-  }
-  
-  if(options && options.domoticzUrl) {
+function Domoticz(options) {
+  if(options) {
+    this.mqttBrokerUrl = options.mqttBrokerUrl;
     this.domoticzUrl = options.domoticzUrl;
   }
   this.idxByName = {};
 }
+
+/** Connect to MTTQ broker */
+Domoticz.prototype.connect = function (callback) {
+  console.log("Connecting to MQTT broker at " + this.mqttBrokerUrl + "...");
+  this.client = mqtt.connect(this.mqttBrokerUrl, mqttOpts);
+  this.client.on('connect', function() {
+    console.log("Connected to MQTT broker");
+    callback();
+  });
+};
 
 /** 
  * Send battery percentage to Domoticz via MQTT
