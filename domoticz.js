@@ -39,9 +39,6 @@ var LEVEL_YELLOW = 2;
 var LEVEL_ORANGE = 3;
 var LEVEL_RED = 4;
 
-// TODO addhardware
-// https://github.com/domoticz/domoticz/blob/master/main/WebServer.cpp#L364
-
 function Domoticz(options) {
   if(options) {
     this.mqttBrokerUrl = options.mqttBrokerUrl;
@@ -109,6 +106,20 @@ Domoticz.prototype.isResponseOk = function (response) {
   return response && response.status == "OK";
 };
 
+/** Prepare Domoticz by adding MQTT broker as hardware */
+Domoticz.prototype.initHardware = function (name, server, port) {
+  console.log("Adding MQTT as Domoticz hardware");
+  
+  var self = this;
+  
+  this.ajax("type=command&param=addhardware&enabled=true&htype=43&name=" + encodeURIComponent(name) + 
+            "&address=" + server + "&port=" + port, function(response) {
+    if(self.isResponseOk(response)) {
+      console.log("Successfully added MQTT broker as Domoticz hardware: '" + name + "' @ " + server + ":" + port);
+    }
+  });
+};
+
 /** Get the devices defined in Domoticz */
 Domoticz.prototype.getDevices = function(callback) {
   this.ajax("type=devices&filter=all", function(response) {
@@ -136,13 +147,6 @@ Domoticz.prototype.getIdxToDevice = function (callback) {
 /** Find or create Domoticz Virtual Sensor Devices to be used */
 Domoticz.prototype.initDevices = function(callback) {
   console.log("Initializing devices on " + this.domoticzUrl);
-  
-  // TODO addhardware if not found
-  /*
-  this.ajax("type=gethardwaretypes", function (response) {
-    console.log("Hardware types: " + JSON.stringify(response));
-  });
-  */
   
   var self = this;
   

@@ -6,23 +6,20 @@ to the [Domoticz home automation system](http://domoticz.com/). This allows you,
 percentage of your mower with the charts made available via the Domoticz GUI.
 
 ## Installation
+(_The installation instructions make reference to .bat files. If you are not on Windows, you are assumed to know what to
+do..._)
 
 1. Set up some [MQTT broker/service](https://github.com/mqtt/mqtt.github.io/wiki/servers), such as [Mosquitto](http://mosquitto.org/)
   1. Note that on Windows you may need to install OpenSSL, see http://git.eclipse.org/c/mosquitto/org.eclipse.mosquitto.git/tree/readme-windows.txt
      linking to http://slproweb.com/products/Win32OpenSSL.html
 2. Install [Domoticz](http://domoticz.com/) on some supported hardware (PC, Raspberry Pi, ...)
-  1. Set up MQTT queue as hardware
-    1. Navigate to the Domoticz web GUI (defaults to [http://localhost:8080/](http://localhost:8080/))
-    2. Click Setup, Hardware
-    3. Enter a Name
-    4. Select type `MQTT Client Gateway with LAN interface`
-    5. Set Remote Address and Port to where your MQTT broker is (default port is 1883)
+  1. Set up MQTT queue as hardware, either by running `prepare-domoticz.bat`, or manually in the GUI under Setup, Hardware
 3. Install [Node.JS](https://nodejs.org/)
 4. Clone this Git repo - `git clone https://github.com/mjiderhamn/worx-landroid-domoticz.git`
   (First install [Git](http://git-scm.com/) if not already installed)
 5. In the cloned directory, run `npm install` to download dependencies
 6. Edit the cloned [`config.js`](config.js). Should be self explanatory.  
-7. Start the application by running `run.bat` (If you are not on Windows, you know what to do...)  
+7. Start the application by running `run.bat` 
 
 ## Response
 
