@@ -13,6 +13,7 @@ var najax = require('najax');
 var DEVICE_NAME_PREFIX = "Worx_Landroid_";
 var BATTERY_PERCENT_DEVICE_NAME = DEVICE_NAME_PREFIX + "Battery"; 
 var TOTAL_MOWING_HOURS_DEVICE_NAME = DEVICE_NAME_PREFIX + "Mowing_Hours";
+var NO_OF_ALARMS_DEVICE_NAME = DEVICE_NAME_PREFIX + "No_Of_Alarms";
 var ALERT_DEVICE_NAME = DEVICE_NAME_PREFIX + "Alert";
 // var MESSAGE_DEVICE_NAME = DEVICE_NAME_PREFIX + "Message";
 
@@ -20,11 +21,12 @@ var ALERT_DEVICE_NAME = DEVICE_NAME_PREFIX + "Alert";
 var TYPE_PERCENTAGE = 2;
 var TYPE_TEXT = 5;
 var TYPE_ALERT = 7;
-var TYPE_RFXMETER = 113;
+var TYPE_RFXMETER = 113; // Subtype counter is hard coded
 
 var ALL_DEVICES = {};
 ALL_DEVICES[BATTERY_PERCENT_DEVICE_NAME] = TYPE_PERCENTAGE;
 ALL_DEVICES[TOTAL_MOWING_HOURS_DEVICE_NAME] = TYPE_RFXMETER;
+ALL_DEVICES[NO_OF_ALARMS_DEVICE_NAME] = TYPE_RFXMETER;
 ALL_DEVICES[ALERT_DEVICE_NAME] = TYPE_ALERT;
 // ALL_DEVICES[MESSAGE_DEVICE_NAME] = TYPE_TEXT;
 
@@ -253,6 +255,10 @@ Domoticz.prototype.setMessage = function(alertMessage) {
   this.sendValue(MESSAGE_DEVICE_NAME, alertMessage);
 };
 */
+
+Domoticz.prototype.setNoOfAlarms = function(noOfAlarms) {
+  this.sendValue(NO_OF_ALARMS_DEVICE_NAME, noOfAlarms);
+};
 
 Domoticz.prototype.setError = function(error) {
   this.sendValue(ALERT_DEVICE_NAME, error ? error : "Unknown error", LEVEL_RED);

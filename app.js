@@ -30,6 +30,9 @@ client.on('connect', function () {
     domoticz.setTotalMowingHours(totalMowingHours);
   };
   
+  landroid.setNoOfAlarms = function(noOfAlarms) {
+    domoticz.setNoOfAlarms(noOfAlarms);
+  };
   landroid.setError = function(error) {
     domoticz.setError(error);
   };

@@ -54,8 +54,10 @@ Landroid.prototype.doPollStatus = function() {
             if(! isNaN(totalMowingHours)) {
               self.setTotalMowingHours(totalMowingHours / 10); // Provided as 0,1 h
             }
-            
-            if(isAnyAlert(response.allarmi)) {
+
+            var noOfAlarms = countAlarms(response.allarmi);
+            self.setNoOfAlarms(noOfAlarms);
+            if(noOfAlarms > 0) {
               self.setError(alertArrayToMessage(response.allarmi));
             }
             else /* if(response.settaggi && response.settaggi[5]) */ { // Charging
@@ -84,15 +86,14 @@ function alertArrayToMessage(arr) {
 }
 
 /** Is there any alert in the provided array? */
-function isAnyAlert(arr) {
-  if(arr && arr.length > 0) {
+function countAlarms(arr) {
+  var output = 0;
+  if(arr) {
     for(var i = 0; i < arr.length; i++) {
-      if(arr[i]) { // There was an alert
-        return true;
-      }
+      output += arr[i];
     }
   }
-  return false;
+  return output;
 }
 
 /** 
@@ -120,6 +121,10 @@ Landroid.prototype.setMessage = function (alertMessage) {
   console.log("Message: " + alertMessage);
 };
 */
+
+Landroid.prototype.setNoOfAlarms = function (noOfAlarms) {
+  console.log("No of alarms: " + noOfAlarms);
+};
 
 Landroid.prototype.setError = function (error) {
   console.log("Error: " + error);
