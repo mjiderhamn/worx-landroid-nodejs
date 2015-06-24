@@ -6,11 +6,9 @@ var Domoticz = require('./domoticz');
 
 var domoticz = new Domoticz(config);
 
-domoticz.initDevices(); // Detect or auto create devices
-
-var landroid = new Landroid(config);
-
-domoticz.connect(function () {
+domoticz.initDevices(function() { // Detect or auto create devices
+  
+  var landroid = new Landroid(config);
   
   // Wire things together
   landroid.setBatteryPercentage = function(batteryPercentage) {
@@ -29,9 +27,9 @@ domoticz.connect(function () {
   landroid.setCharging = function(charging) {
     domoticz.setCharging(charging);
   };
-  
-  setTimeout(function() {
+
+  domoticz.connect(function () { // Connect to MQTT
     console.log("Scheduling polling");
     landroid.pollEvery(60); // Poll every 60 seconds
-  }, 5 * 1000); // Wait 5 seconds to allow Domoticz to initialize TODO handle pre-init calls
-});
+  });  
+}); 

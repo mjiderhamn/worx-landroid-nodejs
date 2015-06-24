@@ -134,7 +134,7 @@ Domoticz.prototype.getIdxToDevice = function (callback) {
 }; 
 
 /** Find or create Domoticz Virtual Sensor Devices to be used */
-Domoticz.prototype.initDevices = function() {
+Domoticz.prototype.initDevices = function(callback) {
   console.log("Initializing devices on " + this.domoticzUrl);
   
   // TODO addhardware if not found
@@ -159,11 +159,11 @@ Domoticz.prototype.initDevices = function() {
     else
       console.log("No existing devices found");
 
-    self.createMissingDevices(0, idxToDevice);
+    self.createMissingDevices(0, idxToDevice, callback);
   });
 };
 
-Domoticz.prototype.createMissingDevices = function(index, idxToDevice) {
+Domoticz.prototype.createMissingDevices = function(index, idxToDevice, callback) {
   var self = this;
   
   // NOTE! That we must wait until the previous device has finished processing, or there will be conflicts
@@ -190,8 +190,13 @@ Domoticz.prototype.createMissingDevices = function(index, idxToDevice) {
         // console.log("Making sure idx " + idx + " '" + deviceName + "' is use");
         self.setUsed(idx, deviceName);
       }
-      self.createMissingDevices(index + 1, idxToDevice); // Continue with next device immediately, as there is no risk of mixup
+      self.createMissingDevices(index + 1, idxToDevice, callback); // Continue with next device immediately, as there is no risk of mixup
     }
+  }
+  else { // We are done
+    console.log("Done initializing Domoticz devices");
+    if(callback)
+      callback();    
   }
 };
 
