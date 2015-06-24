@@ -91,14 +91,17 @@ Domoticz.prototype.ajax = function(query, callback) {
   var self = this;
   najax({
       url: self.domoticzUrl + "/json.htm?" + query,
-      dataType: "json" // will be "application/json" in version najax 0.2.0
-    }, 
-    function(response){
-      if(! self.isResponseOk(response))
-        console.error("Response to " + query + ": " + JSON.stringify(response));// Enable for more logging
-      // else console.log("Response to " + query + ": " + JSON.stringify(response));// Enable for more logging
-      callback(response);
-  });
+      dataType: "json", // will be "application/json" in version najax 0.2.0
+      success: function(response) {
+        if(! self.isResponseOk(response))
+          console.error("Response to " + query + ": " + JSON.stringify(response));// Enable for more logging
+        // else console.log("Response to " + query + ": " + JSON.stringify(response));// Enable for more logging
+        callback(response);
+      },
+      error: function (response) {
+        console.error("Error communicating with Domoticz");
+      }  
+    });
 };
 
 /** Check if JSON response seems ok */

@@ -39,35 +39,39 @@ Landroid.prototype.doPollStatus = function() {
         url: "http://" + this.serverAndPort + "/jsondata.cgi",
         dataType: "json", // will be "application/json" in version najax 0.2.0
         username: "admin",
-        password: this.pinCode
-      },
-      function (response) {
-        if(response) {
-          var batteryPercentage = response.perc_batt;
-          if(!batteryPercentage) {
-            console.error("Make sure your pin code is correc!");
+        password: this.pinCode,
+        success: function(response) {
+          if(response) {
+            var batteryPercentage = response.perc_batt;
+            if(!batteryPercentage) {
+              console.error("Make sure your pin code is correc!");
+            }
+            else {
+              // console.log("Response from Landroid, batteryPercentage: " + batteryPercentage);
+              self.setBatteryPercentage(batteryPercentage);
+              var totalMowingHours = parseInt(response.ore_movimento);
+              if(! isNaN(totalMowingHours)) {
+                self.setTotalMowingHours(totalMowingHours / 10); // Provided as 0,1 h
+              }
+  
+              var noOfAlarms = countAlarms(response.allarmi);
+              self.setNoOfAlarms(noOfAlarms);
+              if(noOfAlarms > 0) {
+                self.setError(alertArrayToMessage(response.allarmi));
+              }
+              else /* if(response.settaggi && response.settaggi[5]) */ { // Charging
+                self.setCharging(response.settaggi && response.settaggi[5]);
+              }
+            }
           }
-          else {
-            // console.log("Response from Landroid, batteryPercentage: " + batteryPercentage);
-            self.setBatteryPercentage(batteryPercentage);
-            var totalMowingHours = parseInt(response.ore_movimento);
-            if(! isNaN(totalMowingHours)) {
-              self.setTotalMowingHours(totalMowingHours / 10); // Provided as 0,1 h
-            }
-
-            var noOfAlarms = countAlarms(response.allarmi);
-            self.setNoOfAlarms(noOfAlarms);
-            if(noOfAlarms > 0) {
-              self.setError(alertArrayToMessage(response.allarmi));
-            }
-            else /* if(response.settaggi && response.settaggi[5]) */ { // Charging
-              self.setCharging(response.settaggi && response.settaggi[5]);
-            }
-          }
+          else
+            console.error("No response!");
+        },
+        error: function (response) {
+          console.error("Error communicating with Landroid!");
+          self.setError("No contact with Landroid!")
         }
-        else
-          console.error("No response!");
-      });  
+    });  
 };
 
 /** Get alert messages from array of flags */
