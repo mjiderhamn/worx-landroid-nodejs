@@ -93,7 +93,7 @@ is inlined as comments.
         0, // -- " --
         0  // -- " --
     ],
-    "settaggi": [ // Settings
+    "settaggi": [ // Settings / state
         0,
         0,
         0,
