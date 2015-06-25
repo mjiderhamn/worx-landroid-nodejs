@@ -42,12 +42,14 @@ Landroid.prototype.doPollStatus = function() {
         password: this.pinCode,
         success: function(response) {
           if(response) {
-            var batteryPercentage = response.perc_batt;
-            if(!batteryPercentage) {
+            if(! response.allarmi) { // Response is not what we expected
               console.error("Make sure your pin code is correc!");
             }
             else {
+              var batteryPercentage = response.perc_batt;
               // console.log("Response from Landroid, batteryPercentage: " + batteryPercentage);
+              var workingTimePercent = response.percent_programmatore;
+              
               self.setBatteryPercentage(batteryPercentage);
               var totalMowingHours = parseInt(response.ore_movimento);
               if(! isNaN(totalMowingHours)) {
@@ -59,8 +61,14 @@ Landroid.prototype.doPollStatus = function() {
               if(noOfAlarms > 0) {
                 self.setError(alertArrayToMessage(response.allarmi));
               }
-              else /* if(response.settaggi && response.settaggi[5]) */ { // Charging
-                self.setCharging(response.settaggi && response.settaggi[5]);
+              else { // There were no alarms
+                var manualStop = data.settaggi[14];
+                var charging = data.settaggi[5] && ! data.settaggi[13];
+                var chargeCompleted = data.settaggi[5] && data.settaggi[13];
+                var goingHome = data.settaggi[5];
+                var mowing = ! manualStop && ! charging && ! chargeCompleted && ! goingHome; 
+                
+                self.setCharging(response.settaggi && response.settaggi[5]); // Charging
               }
             }
           }
@@ -93,7 +101,7 @@ function alertArrayToMessage(arr) {
 function countAlarms(arr) {
   var output = 0;
   if(arr) {
-    for(var i = 0; i < arr.length; i++) {
+    for(var i = 0; i < arr.length; i++) { // Length should be 32
       output += arr[i];
     }
   }

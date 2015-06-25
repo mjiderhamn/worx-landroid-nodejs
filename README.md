@@ -5,6 +5,8 @@ robotic mowers](https://www.worxlandroid.com/) sporting a RESTful API (currently
 to the [Domoticz home automation system](http://domoticz.com/). This allows you, for example, to track the battery
 percentage of your mower with the charts made available via the Domoticz GUI.
 
+Tested with WG796E firmware version 12.1. Please report any breaking changes to the API.
+
 ## Installation
 (_The installation instructions make reference to .bat files. If you are not on Windows, you are assumed to know what to
 do..._)
@@ -29,9 +31,9 @@ The JSON response from the Landroid contains the following JSON structure, with 
 is inlined as comments.
 ```javascript
 {
-    "CntProg": 95,
+    "CntProg": 95, // Firmware version?????
     "lingua": 0, // Language in use
-    "ore_funz": [ // Hours something...
+    "ore_funz": [ // Decides for how long the mower will work each day, probably expressed as 0,1 h
         100,
         122,
         100,
@@ -49,7 +51,7 @@ is inlined as comments.
         2,
         2
     ],
-    "min_on": [ // Hours per weekday that the Landroid should mow, in addition to the hours above
+    "min_on": [ // Minutes per weekday that the Landroid should mow, in addition to the hours above
         0,
         0,
         0,
@@ -58,38 +60,38 @@ is inlined as comments.
         0,
         0
     ],
-    "allarmi": [ // Alarms
-        0, // "blade blocked"
-        0, // "repositioning error"
-        0, // Set to 1 when "Outside working area" 
-        0, // "blade blocked"
-        0, // Set to 1 when "Outside working area"
-        0, // Set to 1 when "Lifted up"
-        0, // "alarm"
-        0, // Set to 1 when "Lifted up"; "upside down"?
-        0,
-        0, // "collision sensor blocked"
-        0, // "mower tilted"
-        0, // Set to 1 when "Lifted up"; "charge error"?
-        0, // "battery error"
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
+    "allarmi": [ // Alarms - flags set to 1 when alarm is active
+        0, // [0] "Blade blocked"
+        0, // [1] "Repositioning error"
+        0, // [2] "Outside wire" ("Outside working area") 
+        0, // [3] "Blade blocked"
+        0, // [4] "Outside wire" ("Outside working area")
+        0, // [5] "Mower lifted" ("Lifted up")
+        0, // [6] "error"
+        0, // [7] "error" (Set when "Lifted up" - "Upside down"?)
+        0, // [8] "error"
+        0, // [9] "Collision sensor blocked"
+        0, // [10] "Mower tilted"
+        0, // [11] "Charge error" (Set when "Lifted up"?)
+        0, // [12] "Battery error"
+        0, // Reserved for future use?
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0, // -- " --
+        0  // -- " --
     ],
     "settaggi": [ // Settings
         0,
@@ -132,23 +134,23 @@ is inlined as comments.
         ...,
         ...
     ],
-    "time_format": 1,
-    "date_format": 2,
+    "time_format": 1, // Time format
+    "date_format": 2, // Date format
     "rit_pioggia": 180, // Time to wait after rain, in minutes
     "area": 0,
     "enab_bordo": 1, // Enable edge cutting
     "g_sett_attuale": 1, // Is charging???
     "g_ultimo_bordo": 0,
     "ore_movimento": 626, // Total time the mower has been mowing, expressed in 0,1 h 
-    "percent_programmatore": 50, // Percent increase of the automatic area setting
-    "indice_area": 9,
+    "percent_programmatore": 50, // Working time percent (increase)
+    "indice_area": 9, // Garden size, assumed to be in 100 m^2
     "tipo_lando": 8,
     "beep_hi_low": 0,
-    "gradi_ini_diritto": 30, // Something "right"
-    "perc_cor_diritto": 103, // Something "right"
-    "coef_angolo_retta": 80, // Something "straigt line"
-    "scost_zero_retta": 1,   // Something "straigt line"
-    "offset_inclinometri": [ // Probably the calibration of the sensors
+    "gradi_ini_diritto": 30, // Something "right"?
+    "perc_cor_diritto": 103, // Something "right"?
+    "coef_angolo_retta": 80, // Something "straigt line"?
+    "scost_zero_retta": 1,   // Something "straigt line"?
+    "offset_inclinometri": [ // Probably the calibration of the sensors?
         2039,
         2035,
         2672
