@@ -12,6 +12,8 @@ var mqttOpts = {
 // https://github.com/najaxjs/najax
 var najax = require('najax');
 
+var MQTT_HARDWARE = 43;
+    
 // Constants with names of Virtual Sensor devices used for Landroid 
 var DEVICE_NAME_PREFIX = "Worx_Landroid_";
 var BATTERY_PERCENT_DEVICE_NAME = DEVICE_NAME_PREFIX + "Battery"; 
@@ -113,15 +115,35 @@ Domoticz.prototype.isResponseOk = function (response) {
 
 /** Prepare Domoticz by adding MQTT broker as hardware */
 Domoticz.prototype.initHardware = function (name, server, port) {
-  console.log("Adding MQTT as Domoticz hardware");
   
   var self = this;
-  
-  this.ajax("type=command&param=addhardware&enabled=true&htype=43&name=" + encodeURIComponent(name) + 
-            "&address=" + server + "&port=" + port, function(response) {
-    if(self.isResponseOk(response)) {
-      console.log("Successfully added MQTT broker as Domoticz hardware: '" + name + "' @ " + server + ":" + port);
+
+  this.ajax("type=hardware", function(response) {
+    var matchingHardware;
+
+    if(self.isResponseOk(response) && response.result) {
+      response.result.forEach(function(hardware) {
+        if(hardware.Type == MQTT_HARDWARE) {
+          // console.log("MQTT hardware: " + JSON.stringify(hardware));
+          if(hardware.Address == server && hardware.Port == port) {
+            matchingHardware = hardware;
+          }
+        }
+      });
     }
+    
+    if(typeof matchingHardware == "undefined") {
+      console.log("Adding MQTT as Domoticz hardware");
+
+      self.ajax("type=command&param=addhardware&enabled=true&htype=" + MQTT_HARDWARE + "&name=" + encodeURIComponent(name) + 
+                "&address=" + server + "&port=" + port, function(response) {
+        if(self.isResponseOk(response)) {
+          console.log("Successfully added MQTT broker as Domoticz hardware: '" + name + "' @ " + server + ":" + port);
+        }
+      });
+    }
+    else
+      console.log("MQTT hardware found in Domoticz");
   });
 };
 

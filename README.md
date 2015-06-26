@@ -19,9 +19,7 @@ do..._)
   (First install [Git](http://git-scm.com/) if not already installed)
 4. Edit the cloned [`config.js`](config.js). Should be self explanatory.  
 5. Install [Domoticz](http://domoticz.com/) on some supported hardware (PC, Raspberry Pi, ...). 
-6. Set up MQTT broker as Domoticz hardware, either by running `prepare-domoticz.bat` in the cloned directory, or
-   manually in the GUI under Setup, Hardware.
-7. If you did not run `prepare-domoticz.bat` above, you need to run `install.bat` now to download dependencies.
+7. Run `install.bat` now to download dependencies.
 8. Start the application by running `run.bat` 
 9. Use your browser and navigate to _Utility_ in the Domoticz UI.
 
