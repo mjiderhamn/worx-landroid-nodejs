@@ -15,12 +15,12 @@ var najax = require('najax');
 var MQTT_HARDWARE = 43;
     
 // Constants with names of Virtual Sensor devices used for Landroid 
-var DEVICE_NAME_PREFIX = "Worx_Landroid_";
+var DEVICE_NAME_PREFIX = "Worx Landroid ";
 var BATTERY_PERCENT_DEVICE_NAME = DEVICE_NAME_PREFIX + "Battery"; 
-var TOTAL_MOWING_HOURS_DEVICE_NAME = DEVICE_NAME_PREFIX + "Mowing_Hours";
-var NO_OF_ALARMS_DEVICE_NAME = DEVICE_NAME_PREFIX + "No_Of_Alarms";
+var TOTAL_MOWING_HOURS_DEVICE_NAME = DEVICE_NAME_PREFIX + "Mowing Hours";
+var NO_OF_ALARMS_DEVICE_NAME = DEVICE_NAME_PREFIX + "No Of Alarms";
 var ALERT_DEVICE_NAME = DEVICE_NAME_PREFIX + "Alert";
-// var MESSAGE_DEVICE_NAME = DEVICE_NAME_PREFIX + "Message";
+var MESSAGE_DEVICE_NAME = DEVICE_NAME_PREFIX + "Message";
 
 // Constants for sensor types, see https://www.domoticz.com/wiki/Domoticz_API/JSON_URL%27s#Create_a_Virtual_Sensor
 var TYPE_PERCENTAGE = 2;
@@ -33,7 +33,7 @@ ALL_DEVICES[BATTERY_PERCENT_DEVICE_NAME] = TYPE_PERCENTAGE;
 ALL_DEVICES[TOTAL_MOWING_HOURS_DEVICE_NAME] = TYPE_RFXMETER;
 ALL_DEVICES[NO_OF_ALARMS_DEVICE_NAME] = TYPE_RFXMETER;
 ALL_DEVICES[ALERT_DEVICE_NAME] = TYPE_ALERT;
-// ALL_DEVICES[MESSAGE_DEVICE_NAME] = TYPE_TEXT;
+ALL_DEVICES[MESSAGE_DEVICE_NAME] = TYPE_TEXT;
 
 var AlertLevel = {
   GRAY: 0,
@@ -307,11 +307,12 @@ Domoticz.prototype.setNoOfAlarms = function(noOfAlarms) {
 };
 
 Domoticz.prototype.setError = function(error) {
-  this.sendValue(ALERT_DEVICE_NAME, error ? error : "Unknown error", AlertLevel.RED);
+  this.setAlert(AlertLevel.RED, error ? error : "Unknown error");
 };
 
 Domoticz.prototype.setAlert = function (level, message) {
   this.sendValue(ALERT_DEVICE_NAME, message, level);
+  this.sendValue(MESSAGE_DEVICE_NAME, message);
 };
 
 module.exports = Domoticz;
