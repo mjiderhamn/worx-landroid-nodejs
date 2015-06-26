@@ -33,11 +33,13 @@ ALL_DEVICES[NO_OF_ALARMS_DEVICE_NAME] = TYPE_RFXMETER;
 ALL_DEVICES[ALERT_DEVICE_NAME] = TYPE_ALERT;
 // ALL_DEVICES[MESSAGE_DEVICE_NAME] = TYPE_TEXT;
 
-var LEVEL_GRAY = 0;
-var LEVEL_GREEN = 1;
-var LEVEL_YELLOW = 2;
-var LEVEL_ORANGE = 3;
-var LEVEL_RED = 4;
+var AlertLevel = {
+  GRAY: 0,
+  GREEN: 1,
+  YELLOW: 2,
+  ORANGE: 3,
+  RED: 4
+};
 
 function Domoticz(options) {
   if(options) {
@@ -262,11 +264,13 @@ Domoticz.prototype.setUsed = function (idx, name) {
 };
 
 Domoticz.prototype.sendBatteryPercentage = function(batteryPercentage) {
-  this.sendValue(BATTERY_PERCENT_DEVICE_NAME, batteryPercentage);
+  if(typeof batteryPercentage != "undefined")
+    this.sendValue(BATTERY_PERCENT_DEVICE_NAME, batteryPercentage);
 };
 
 Domoticz.prototype.setTotalMowingHours = function(totalMowingHours) {
-  this.sendValue(TOTAL_MOWING_HOURS_DEVICE_NAME, totalMowingHours);
+  if(typeof totalMowingHours != "undefined")
+    this.sendValue(TOTAL_MOWING_HOURS_DEVICE_NAME, totalMowingHours);
 };
 
 /*
@@ -276,18 +280,17 @@ Domoticz.prototype.setMessage = function(alertMessage) {
 */
 
 Domoticz.prototype.setNoOfAlarms = function(noOfAlarms) {
-  this.sendValue(NO_OF_ALARMS_DEVICE_NAME, noOfAlarms);
+  if(typeof noOfAlarms != "undefined")
+    this.sendValue(NO_OF_ALARMS_DEVICE_NAME, noOfAlarms);
 };
 
 Domoticz.prototype.setError = function(error) {
-  this.sendValue(ALERT_DEVICE_NAME, error ? error : "Unknown error", LEVEL_RED);
+  this.sendValue(ALERT_DEVICE_NAME, error ? error : "Unknown error", AlertLevel.RED);
 };
 
-Domoticz.prototype.setCharging = function(charging) {
-  if(charging)
-    this.sendValue(ALERT_DEVICE_NAME, "Charging", LEVEL_GREEN);
-  else
-    this.sendValue(ALERT_DEVICE_NAME, "-", LEVEL_GRAY);
+Domoticz.prototype.setAlert = function (level, message) {
+  this.sendValue(ALERT_DEVICE_NAME, message, level);
 };
 
 module.exports = Domoticz;
+module.exports.AlertLevel = AlertLevel;

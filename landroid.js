@@ -5,20 +5,30 @@
 // https://github.com/najaxjs/najax
 var najax = require('najax');
 
+var LandroidState = {
+  CHARGING: "Charging",
+  CHARGING_COMPLETE: "Charging complete",
+  MOWING: "Mowing",
+  GOING_HOME: "Going home",
+  MANUAL_STOP: "Manual stop",
+  ALARM: "Alarm",
+  ERROR: "Error"
+};
+
 var ERROR_MESSAGES = [];
-ERROR_MESSAGES[0] = "blade blocked";
-ERROR_MESSAGES[1] = "repositioning error";
-ERROR_MESSAGES[2] = "wire bounced";
-ERROR_MESSAGES[3] = "blade blocked";
-ERROR_MESSAGES[4] = "outside wire stopped";
-ERROR_MESSAGES[5] = "mower lifted";
-ERROR_MESSAGES[6] = "alarm 6";
-ERROR_MESSAGES[7] = "upside down";
-ERROR_MESSAGES[8] = "alarm 8";
-ERROR_MESSAGES[8] = "collision sensor blocked";
-ERROR_MESSAGES[10] = "mower tilted";
-ERROR_MESSAGES[11] = "charge error";
-ERROR_MESSAGES[12] = "battery error";
+ERROR_MESSAGES[0] = "Blade blocked";
+ERROR_MESSAGES[1] = "Repositioning error";
+ERROR_MESSAGES[2] = "Wire bounced"; // TODO This does not seem to be an actual error
+ERROR_MESSAGES[3] = "Blade blocked";
+ERROR_MESSAGES[4] = "Outside wire";
+ERROR_MESSAGES[5] = "Mower lifted";
+ERROR_MESSAGES[6] = "Alarm 6";
+ERROR_MESSAGES[7] = "Upside down";
+ERROR_MESSAGES[8] = "Alarm 8";
+ERROR_MESSAGES[8] = "Collision sensor blocked";
+ERROR_MESSAGES[10] = "Mower tilted";
+ERROR_MESSAGES[11] = "Charge error";
+ERROR_MESSAGES[12] = "Battery error";
 
 /**
  * Constructor that takes configuration as arguments
@@ -41,43 +51,67 @@ Landroid.prototype.doPollStatus = function() {
         username: "admin",
         password: this.pinCode,
         success: function(response) {
+          var status = null;
           if(response) {
             if(! response.allarmi) { // Response is not what we expected
-              console.error("Make sure your pin code is correc!");
+              console.error("Make sure your pin code is correct!");
             }
             else {
-              var batteryPercentage = response.perc_batt;
-              // console.log("Response from Landroid, batteryPercentage: " + batteryPercentage);
-              var workingTimePercent = response.percent_programmatore;
+              status = {
+                state: null,
+                errorMessage: null,
+
+                batteryPercentage: null,
+                totalMowingHours: null,
+                noOfAlarms: null
+              };
               
-              self.setBatteryPercentage(batteryPercentage);
+              status.batteryPercentage = response.perc_batt;
+              // console.log("Response from Landroid, batteryPercentage: " + batteryPercentage);
+              status.workingTimePercent = response.percent_programmatore;
+              
               var totalMowingHours = parseInt(response.ore_movimento);
               if(! isNaN(totalMowingHours)) {
-                self.setTotalMowingHours(totalMowingHours / 10); // Provided as 0,1 h
+                status.totalMowingHours = totalMowingHours / 10;  // Provided as 0,1 h 
               }
   
-              var noOfAlarms = countAlarms(response.allarmi);
-              self.setNoOfAlarms(noOfAlarms);
-              if(noOfAlarms > 0) {
-                self.setError(alertArrayToMessage(response.allarmi));
+              status.noOfAlarms = countAlarms(response.allarmi);
+              if(status.noOfAlarms > 0) {
+                status.state = LandroidState.ALARM;
+                status.errorMessage = alertArrayToMessage(response.allarmi);
               }
               else { // There were no alarms
-                var manualStop = data.settaggi[14];
-                var charging = data.settaggi[5] && ! data.settaggi[13];
-                var chargeCompleted = data.settaggi[5] && data.settaggi[13];
-                var goingHome = data.settaggi[5];
-                var mowing = ! manualStop && ! charging && ! chargeCompleted && ! goingHome; 
-                
-                self.setCharging(response.settaggi && response.settaggi[5]); // Charging
+                if(response.settaggi[14]) {
+                  status.state = LandroidState.MANUAL_STOP;
+                }
+                else if(response.settaggi[5] && ! response.settaggi[13]) {
+                  status.state = LandroidState.CHARGING;
+                }
+                else if(response.settaggi[5] && response.settaggi[13]) {
+                  status.state = LandroidState.CHARGING_COMPLETE;
+                }
+                else if(response.settaggi[5]) {
+                  status.state = LandroidState.GOING_HOME;
+                }
+                else
+                  status.state = LandroidState.MOWING;
               }
+              
+              
             }
           }
           else
             console.error("No response!");
+          
+          console.log("  Landroid status: " + JSON.stringify(status));
+
+          if(self.updateListener)
+            self.updateListener(status);
         },
         error: function (response) {
           console.error("Error communicating with Landroid!");
-          self.setError("No contact with Landroid!")
+          if(self.updateListener)
+            self.updateListener(null);
         }
     });  
 };
@@ -110,9 +144,11 @@ function countAlarms(arr) {
 
 /** 
  * Start polling the Landroid for status every n seconds. First poll will be triggered before function returns.
- * @param seconds No of senconds between poll. 
+ * @param seconds No of senconds between poll.
+ * @param updateListener function to be called when there are updates
  */
-Landroid.prototype.pollEvery = function (seconds) {
+Landroid.prototype.pollEvery = function (seconds, updateListener) {
+  this.updateListener = updateListener;
   this.doPollStatus(); // First poll immediately
   var self = this;
   setInterval(function() { self.doPollStatus() }, seconds * 1000);
@@ -120,30 +156,11 @@ Landroid.prototype.pollEvery = function (seconds) {
 
 //////////////////////////////////////////////////////////////////////////////////
 // These handlers are supposed to be overridden
-Landroid.prototype.setBatteryPercentage = function(batteryPercentage) {
-  console.log("Battery percentage: " + batteryPercentage);
-};
-
-Landroid.prototype.setTotalMowingHours = function(totalMowingHours) {
-  console.log("Total mowing hours: " + totalMowingHours);
-};
-
-/*
-Landroid.prototype.setMessage = function (alertMessage) {
-  console.log("Message: " + alertMessage);
-};
-*/
-
-Landroid.prototype.setNoOfAlarms = function (noOfAlarms) {
-  console.log("No of alarms: " + noOfAlarms);
-};
 
 Landroid.prototype.setError = function (error) {
   console.log("Error: " + error);
 };
 
-Landroid.prototype.setCharging = function (charging) {
-  console.log("Charging? " + charging);
-};
-
 module.exports = Landroid;
+// Expose LandroidState
+module.exports.LandroidState = LandroidState;
