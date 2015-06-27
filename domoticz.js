@@ -292,7 +292,7 @@ Domoticz.prototype.sendBatteryPercentage = function(batteryPercentage) {
 
 Domoticz.prototype.setTotalMowingHours = function(totalMowingHours) {
   if(typeof totalMowingHours != "undefined")
-    this.sendValue(TOTAL_MOWING_HOURS_DEVICE_NAME, totalMowingHours);
+    this.sendValue(TOTAL_MOWING_HOURS_DEVICE_NAME, Math.round(totalMowingHours)); // Domoticz doesn't handle decimals in counters well
 };
 
 /*
