@@ -1,3 +1,3 @@
 @ECHO OFF
 ECHO Starting Worx Landroid Domoticz adapter
-node app.js
+node landroid2domoticz.js
