@@ -285,7 +285,7 @@ Domoticz.prototype.setUsed = function (idx, name) {
   });
 };
 
-Domoticz.prototype.sendBatteryPercentage = function(batteryPercentage) {
+Domoticz.prototype.setBatteryPercentage = function(batteryPercentage) {
   if(typeof batteryPercentage != "undefined")
     this.sendValue(BATTERY_PERCENT_DEVICE_NAME, batteryPercentage);
 };

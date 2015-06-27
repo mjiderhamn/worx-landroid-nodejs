@@ -36,7 +36,7 @@ domoticz.initDevices(function() { // Detect or auto create devices
       if(status) { // We got some data back from the Landroid
         // Send data to Domoticz
         domoticz.setNoOfAlarms(status.noOfAlarms);
-        domoticz.sendBatteryPercentage(status.batteryPercentage);
+        domoticz.setBatteryPercentage(status.batteryPercentage);
         domoticz.setTotalMowingHours(status.totalMowingHours);
         
         switch (status.state) {
