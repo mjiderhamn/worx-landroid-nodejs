@@ -45,7 +45,7 @@ landroid.pollEvery(60, function(status) { // Poll every 60 seconds
     }
   }
   else {
-    domoticz.setError("Error getting update!");
+    homeAssistant.setState("Error getting update!");
     console.error("Error getting update!");
   }
 });

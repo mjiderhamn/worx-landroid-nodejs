@@ -13,7 +13,7 @@ function Entity(entityId, friendlyName, unitOfMeasurement) {
 
 var BATTERY_PERCENT_ENTITY_ID = new Entity("battery_percent", "Battery percent", "%"); 
 var TOTAL_MOWING_HOURS_ENTITY_ID = new Entity("total_mowing_hours", "Total mowing hours", "h");
-var NO_OF_ALARMS_ENTITY_ID = new Entity("no_of_alarms", "No of alarms");
+var NO_OF_ALARMS_ENTITY_ID = new Entity("no_of_alarms", "No of alarms", "#");
 // var ALERT_ENTITY_ID = new Entity("Alert";
 var STATE_ENTITY_ID = new Entity("state", "State");
 
@@ -27,7 +27,7 @@ HomeAssistant.prototype.ajax = function (type, uri, data, callback) {
   var self = this;
 
   var url = self.homeAssistantUrl + "/api/" + (uri ? uri : "");
-  console.log("About to '" + type + "' to '" + url + "'" + (data ? ": " + JSON.stringify(data) : ""));
+  // console.log("About to '" + type + "' to '" + url + "'" + (data ? ": " + JSON.stringify(data) : ""));
   
   najax({
     url: url,
@@ -39,7 +39,7 @@ HomeAssistant.prototype.ajax = function (type, uri, data, callback) {
       "X-HA-Access": self.homeAssistantPassword
     },
     success: function(response) {
-      console.log("Response from HomeAssistant: " + JSON.stringify(response));
+      // console.log("Response from HomeAssistant: " + JSON.stringify(response));
       if(callback)
         callback(response);
     },
