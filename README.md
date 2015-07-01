@@ -13,7 +13,7 @@ Regardless of the home automation system you are planning to use, you need to do
 do..._)
 
 1. Install [Node.JS](https://nodejs.org/). Make sure you allow `npm` to be on your `PATH`.
-2. Clone this Git repo - `git clone https://github.com/mjiderhamn/worx-landroid-domoticz.git`
+2. Clone this Git repo - `git clone https://github.com/mjiderhamn/worx-landroid-nodejs.git`
   (First install [Git](http://git-scm.com/) if not already installed)
 3. Run `install.bat` to download dependencies.
 4. Edit the cloned [`config.js`](config.js). Should be self explanatory. Although you may want to wait with this step until
