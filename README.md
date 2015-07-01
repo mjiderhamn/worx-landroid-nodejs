@@ -1,29 +1,40 @@
-# Domoticz adapter for Worx Landroid
+# Home automation integration for Worx Landroid
+ 
+This is a small [Node.JS](https://nodejs.org/) library that allows integrating [Worx Landroid robotic 
+mowers](https://www.worxlandroid.com/) with various home automation systems for logging/charting Landroid status such as 
+battery percentage and notifications for Landroid alarms.
+  
+The library is assumed to work with any Landroid sporting WiFi and a RESTful API (currently models WG796E and WG797E),
+and has been tested with WG796E firmware version 12.1. Please report any breaking changes to the API.
 
-This is a small adapter implemented in [Node.JS](https://nodejs.org/), allowing to capture the status [Worx Landroid
-robotic mowers](https://www.worxlandroid.com/) sporting a RESTful API (currently models WG796E and WG797E) and publish
-to the [Domoticz home automation system](http://domoticz.com/). This allows you, for example, to track the battery
-percentage of your mower with the charts made available via the Domoticz GUI.
-
-Tested with WG796E firmware version 12.1. Please report any breaking changes to the API.
-
-## Installation
+## Common installation
+Regardless of the home automation system you are planning to use, you need to do the following:
 (_The installation instructions make reference to .bat files. If you are not on Windows, you are assumed to know what to
 do..._)
+
+1. Install [Node.JS](https://nodejs.org/). Make sure you allow `npm` to be on your `PATH`.
+2. Clone this Git repo - `git clone https://github.com/mjiderhamn/worx-landroid-domoticz.git`
+  (First install [Git](http://git-scm.com/) if not already installed)
+3. Edit the cloned [`config.js`](config.js). Should be self explanatory.  
+4. Run `install.bat` to download dependencies.
+
+## Domoticz
+
+If you plan to use [Domoticz home automation system](http://domoticz.com/), follow these additional steps: 
 
 1. Set up some [MQTT broker/service](https://github.com/mqtt/mqtt.github.io/wiki/servers), such as [Mosquitto](http://mosquitto.org/)
   1. Note that on Windows you may need to install OpenSSL, see http://git.eclipse.org/c/mosquitto/org.eclipse.mosquitto.git/tree/readme-windows.txt
      linking to http://slproweb.com/products/Win32OpenSSL.html
-2. Install [Node.JS](https://nodejs.org/). Make sure you allow `npm` to be on your `PATH`.
-3. Clone this Git repo - `git clone https://github.com/mjiderhamn/worx-landroid-domoticz.git`
-  (First install [Git](http://git-scm.com/) if not already installed)
-4. Edit the cloned [`config.js`](config.js). Should be self explanatory.  
-5. Install [Domoticz](http://domoticz.com/) on some supported hardware (PC, Raspberry Pi, ...). 
-7. Run `install.bat` now to download dependencies.
-8. Start the application by running `run.bat` 
-9. Use your browser and navigate to _Utility_ in the Domoticz UI.
+2. Install [Domoticz](http://domoticz.com/) on some supported hardware (PC, Raspberry Pi, ...). 
+3. Start the application by running `run.bat` 
+4. Use your browser and navigate to _Utility_ in the Domoticz UI.
 
-## Response
+## Home Assistant
+If you plan to use [Home Assistant](https://home-assistant.io), follow these additional steps:
+
+_*TODO*_
+
+## Worx Landroid REST API JSON response
 
 The JSON response from the Landroid contains the following JSON structure, with Italian names. English explanation 
 is inlined as comments.
