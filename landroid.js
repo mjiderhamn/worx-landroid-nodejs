@@ -15,10 +15,12 @@ var LandroidState = {
   ERROR: "Error"
 };
 
+var WIRE_BOUNCED_ALARM_INDEX = 2;
+
 var ERROR_MESSAGES = [];
 ERROR_MESSAGES[0] = "Blade blocked";
 ERROR_MESSAGES[1] = "Repositioning error";
-ERROR_MESSAGES[2] = "Wire bounced"; // TODO This does not seem to be an actual error
+ERROR_MESSAGES[WIRE_BOUNCED_ALARM_INDEX] = "Wire bounced";
 ERROR_MESSAGES[3] = "Blade blocked";
 ERROR_MESSAGES[4] = "Outside wire";
 ERROR_MESSAGES[5] = "Mower lifted";
@@ -121,7 +123,7 @@ function alertArrayToMessage(arr) {
   var output = "";
   if(arr && arr.length > 0) {
     for(var i = 0; i < arr.length; i++) {
-      if(arr[i]) { // There was an alert
+      if(arr[i] && i != WIRE_BOUNCED_ALARM_INDEX) { // There was an alert (ignore wire bounce)
         var errorMessage = ERROR_MESSAGES[i];
         if(errorMessage)
           output += errorMessage + "; ";
@@ -136,7 +138,9 @@ function countAlarms(arr) {
   var output = 0;
   if(arr) {
     for(var i = 0; i < arr.length; i++) { // Length should be 32
-      output += arr[i];
+      if(i != WIRE_BOUNCED_ALARM_INDEX) { // Ignore wire bounce
+        output += arr[i];
+      }
     }
   }
   return output;
