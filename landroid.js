@@ -38,17 +38,17 @@ ERROR_MESSAGES[12] = "Battery error";
  * @constructor
  */
 function Landroid(config) {
-  this.serverAndPort = config.serverAndPort;
+  this.landroidUrl = config.landroidUrl;
   this.pinCode = config.pinCode;
 }
 
 Landroid.prototype.doPollStatus = function() {
-  console.log("About to poll Landroid at " + this.serverAndPort + " for status");
+  console.log("About to poll Landroid at " + this.landroidUrl + " for status");
   
   var self = this;
   
   najax({
-        url: "http://" + this.serverAndPort + "/jsondata.cgi",
+        url: this.landroidUrl + "/jsondata.cgi",
         dataType: "json", // will be "application/json" in version najax 0.2.0
         username: "admin",
         password: this.pinCode,

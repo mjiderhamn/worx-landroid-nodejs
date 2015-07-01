@@ -1,4 +1,4 @@
-# Home automation integration for Worx Landroid
+# Home automation integration for Worx Landroid robotic mowers
  
 This is a small [Node.JS](https://nodejs.org/) library that allows integrating [Worx Landroid robotic 
 mowers](https://www.worxlandroid.com/) with various home automation systems for logging/charting Landroid status such as 
@@ -15,8 +15,9 @@ do..._)
 1. Install [Node.JS](https://nodejs.org/). Make sure you allow `npm` to be on your `PATH`.
 2. Clone this Git repo - `git clone https://github.com/mjiderhamn/worx-landroid-domoticz.git`
   (First install [Git](http://git-scm.com/) if not already installed)
-3. Edit the cloned [`config.js`](config.js). Should be self explanatory.  
-4. Run `install.bat` to download dependencies.
+3. Run `install.bat` to download dependencies.
+4. Edit the cloned [`config.js`](config.js). Should be self explanatory. Although you may want to wait with this step until
+  you have installed your home automation software, since you will need some details from that installation.
 
 ## Domoticz
 
@@ -26,13 +27,20 @@ If you plan to use [Domoticz home automation system](http://domoticz.com/), foll
   1. Note that on Windows you may need to install OpenSSL, see http://git.eclipse.org/c/mosquitto/org.eclipse.mosquitto.git/tree/readme-windows.txt
      linking to http://slproweb.com/products/Win32OpenSSL.html
 2. Install [Domoticz](http://domoticz.com/) on some supported hardware (PC, Raspberry Pi, ...). 
-3. Start the application by running `run.bat` 
+3. Start sending Landroid data to Domoticz by running `landroid2domoticz.bat` 
 4. Use your browser and navigate to _Utility_ in the Domoticz UI.
 
 ## Home Assistant
 If you plan to use [Home Assistant](https://home-assistant.io), follow these additional steps:
 
-_*TODO*_
+Install Home Assistant by following the instructions at https://home-assistant.io/getting-started/. **NOTE!** If you 
+plan to use Home Assistant only for your Landroid, you can simplify the installation: Between the `git clone ...` and 
+`python3 -m pip install ...` commands as per the install instructions, edit the `requirements.txt` file (if you are not 
+used to Git you may want to create a local backup first) and remove or comment out (by starting the line with `#`) 
+everything below the line 
+> `# Optional, needed for specific components`
+
+To start sending Landroid information to Home Assistant run `landroid2home-assistant.bat`.
 
 ## Worx Landroid REST API JSON response
 
