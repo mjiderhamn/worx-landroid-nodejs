@@ -31,10 +31,13 @@ If you plan to use [Domoticz home automation system](http://domoticz.com/), foll
 4. Use your browser and navigate to _Utility_ in the Domoticz UI.
 
 ## Home Assistant
-If you plan to use [Home Assistant](https://home-assistant.io), follow these additional steps:
+If you plan to use [Home Assistant](https://home-assistant.io), first read the notes below and then follow the 
+instructions at https://home-assistant.io/getting-started/.
+ 
+### Notes
+You may need to exchange the `python3` commands for `python`, depending on your installation.
 
-Install Home Assistant by following the instructions at https://home-assistant.io/getting-started/. **NOTE!** If you 
-plan to use Home Assistant only for your Landroid, you can simplify the installation: Between the `git clone ...` and 
+If you plan to use Home Assistant only for your Landroid, you can simplify the installation: Between the `git clone ...` and 
 `python3 -m pip install ...` commands as per the install instructions, edit the `requirements.txt` file (if you are not 
 used to Git you may want to create a local backup first) and remove or comment out (by starting the line with `#`) 
 everything below the line 
