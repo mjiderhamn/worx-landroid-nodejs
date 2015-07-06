@@ -8,9 +8,10 @@ The library is assumed to work with any Landroid sporting WiFi and a RESTful API
 and has been tested with WG796E firmware version 12.1. Please report any breaking changes to the API.
 
 ## Common installation
-Regardless of the home automation system you are planning to use, you need to do the following:
 (_The installation instructions make reference to .bat files. If you are not on Windows, you are assumed to know what to
 do..._)
+
+Regardless of the home automation system you are planning to use, you need to do the following:
 
 1. Install [Node.JS](https://nodejs.org/). Make sure you allow `npm` to be on your `PATH`.
 2. Clone this Git repo - `git clone https://github.com/mjiderhamn/worx-landroid-nodejs.git`
@@ -63,7 +64,7 @@ is inlined as comments.
         40,
         50
     ],
-    "ora_on": [ // Hours per weekday that the Landroid should mow
+    "ora_on": [ // Hour of day that the Landroid should mowing, per weekday
         4,
         4,
         2,
@@ -72,7 +73,7 @@ is inlined as comments.
         2,
         2
     ],
-    "min_on": [ // Minutes per weekday that the Landroid should mow, in addition to the hours above
+    "min_on": [ // Minutes on the hour (above) that the Landroid should start mowing, per weekday
         0,
         0,
         0,
@@ -120,7 +121,7 @@ is inlined as comments.
         0,
         0,
         1,
-        0, // "charging"
+        0, // "in base" ("charging" or "charging completed", see [13])
         0,
         1,
         1,
