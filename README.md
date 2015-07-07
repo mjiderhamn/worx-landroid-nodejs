@@ -5,7 +5,7 @@ mowers](https://www.worxlandroid.com/) with various home automation systems for 
 battery percentage and notifications for Landroid alarms.
   
 The library is assumed to work with any Landroid sporting WiFi and a RESTful API (currently models WG796E and WG797E),
-and has been tested with WG796E firmware version 12.1. Please report any breaking changes to the API.
+and has been tested with WG796E firmware version 12.1 and 12.6. Please report any breaking changes to the API.
 
 ## Common installation
 (_The installation instructions make reference to .bat files. If you are not on Windows, you are assumed to know what to
