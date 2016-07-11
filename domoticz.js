@@ -243,7 +243,7 @@ Domoticz.prototype.createVirtualSensor = function (name, callback) {
   // idx=0 causes auto generation of new idx
   this.ajax("type=createvirtualsensor&idx=0&sensortype=" + type, function (response) {
     if(! self.isResponseOk(response))
-      throw "Error creating sensor '" + name + "': " + status;
+      throw "Error creating sensor '" + name + "': " + response.status;
     else {
       console.log("New device created, looking for its idx");
       self.getIdxToDevice(function(idxToDevice) {
