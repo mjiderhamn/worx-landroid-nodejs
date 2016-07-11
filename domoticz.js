@@ -241,7 +241,7 @@ Domoticz.prototype.createVirtualSensor = function (name, callback) {
   console.log("Creating device " + name + " with type " + type);
   
   // idx=0 causes auto generation of new idx
-  this.ajax("type=createvirtualsensor&idx=0&sensortype=" + type, function (response) {
+  this.ajax("type=createvirtualsensor&idx=0&sensortype=" + type + "&sensorname=" + encodeURIComponent(name), function (response) {
     if(! self.isResponseOk(response))
       throw "Error creating sensor '" + name + "': " + response.status;
     else {
@@ -251,15 +251,16 @@ Domoticz.prototype.createVirtualSensor = function (name, callback) {
         var idxToUse = -1;
         Object.keys(idxToDevice).forEach(function (idx) {
           idx = parseInt(idx);
-          if(idxToDevice[idx].Name == "Unknown") {
+          if(idxToDevice[idx].Name == "Unknown" || // Domoticz 2.x cannot set name during creation 
+             idxToDevice[idx].Name == name) { // Domoticz 3.x will set name during creation
             if(idx > idxToUse) {
-              console.log("Found \"Unknown\" device with idx: " + idx);
+              console.log("Found '" + idxToDevice[idx].Name + "' device with idx: " + idx);
               idxToUse = idx;
             }
           }
         });
         
-        console.log("New device for " + name + " idx: " + idxToUse);
+        console.log("New device for '" + name + "' idx: " + idxToUse);
         callback(idxToUse);
       });
     }
