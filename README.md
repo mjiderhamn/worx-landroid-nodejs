@@ -27,6 +27,8 @@ If you plan to use [Home Assistant](https://home-assistant.io), follow the insta
  
 To start sending Landroid information to Home Assistant run `landroid2home-assistant.bat`.
 
+For tips setting up push notifications, see [here](home-assistant.md).
+
 ## Domoticz
 
 If you plan to use [Domoticz home automation system](http://domoticz.com/), follow these additional steps: 
