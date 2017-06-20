@@ -27,7 +27,7 @@ ERROR_MESSAGES[5] = "Mower lifted";
 ERROR_MESSAGES[6] = "Alarm 6";
 ERROR_MESSAGES[7] = "Upside down";
 ERROR_MESSAGES[8] = "Alarm 8";
-ERROR_MESSAGES[8] = "Collision sensor blocked";
+ERROR_MESSAGES[9] = "Collision sensor blocked";
 ERROR_MESSAGES[10] = "Mower tilted";
 ERROR_MESSAGES[11] = "Charge error";
 ERROR_MESSAGES[12] = "Battery error";
@@ -92,7 +92,7 @@ Landroid.prototype.doPollStatus = function() {
                 else if(response.settaggi[5] && response.settaggi[13]) {
                   status.state = LandroidState.CHARGING_COMPLETE;
                 }
-                else if(response.settaggi[5]) {
+                else if(response.settaggi[15]) {
                   status.state = LandroidState.GOING_HOME;
                 }
                 else
