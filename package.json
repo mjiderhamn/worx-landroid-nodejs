@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "najax": "~0.1.5",
+    "najax": "~1.0.3",
     "mqtt": "~1.3.0"
   }
 }

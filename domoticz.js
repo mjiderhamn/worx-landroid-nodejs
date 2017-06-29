@@ -95,7 +95,7 @@ Domoticz.prototype.ajax = function(query, callback) {
   var self = this;
   najax({
       url: self.domoticzUrl + "/json.htm?" + query,
-      dataType: "json", // will be "application/json" in version najax 0.2.0
+      dataType: "json",
       success: function(response) {
         if(! self.isResponseOk(response))
           console.error("Response to " + query + ": " + JSON.stringify(response));// Enable for more logging

@@ -33,8 +33,8 @@ HomeAssistant.prototype.ajax = function (type, uri, data, callback) {
     url: url,
     type: type,
     data: data, // ? JSON.stringify(data) : null,
-    contentType: "json", // will be "application/json" in version najax 0.2.0
-    dataType: "json", // will be "application/json" in version najax 0.2.0
+    contentType: "application/json",
+    dataType: "json",
     headers: {
       "X-HA-Access": self.homeAssistantPassword
     },
