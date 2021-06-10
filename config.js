@@ -36,5 +36,16 @@ module.exports = {
   homeAssistantUrl: "http://localhost:8123",
   
   /** The password you have chosen for Home Assistant */
-  homeAssistantPassword: "YOUR HOME ASSISTANT PASSWORD" // <---- Must be edited if you plan to use Home Assistant!!!
+  homeAssistantPassword: "YOUR HOME ASSISTANT PASSWORD", // <---- Must be edited if you plan to use Home Assistant!!!
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Settings needed for reporting metrics to InfluxDB 2.x
+
+  InfluxDB2: {
+    url: 'http://localhost:8086',
+    org: 'my_org',
+    bucket: 'my_bucket',
+    token: 'REPLACEME'
+  }
+
 };

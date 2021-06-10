@@ -1,8 +1,9 @@
 {
-  "name": "worx-landroid-domoticz",
-  "version": "0.1.0",
+  "name": "worx-landroid-nodejs",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
+    "@influxdata/influxdb-client": "^1.14.0",
     "najax": "~1.0.3",
     "mqtt": "~1.3.0"
   }

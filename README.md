@@ -40,6 +40,16 @@ If you plan to use [Domoticz home automation system](http://domoticz.com/), foll
 3. Start sending Landroid data to Domoticz by running `landroid2domoticz.bat` 
 4. Use your browser and navigate to _Utility_ in the Domoticz UI.
 
+## InfluxDB 2.x
+
+You can have metrics collected from the mower(s) reported to [InfluxDB](https://www.influxdata.com/products/influxdb/)
+Time Series Database (TSDB).
+
+Edit the `InfluxDB2` section of [`config.js`](config.js) and insert your InfluxDB URL, organization, bucket and 
+[authentication token](https://docs.influxdata.com/influxdb/v2.0/security/tokens/).
+
+Metrics are reported to the `landroid` measurement.
+
 ## Worx Landroid REST API JSON response
 
 The documentation of the API has been moved [here](landroid-api.md).
