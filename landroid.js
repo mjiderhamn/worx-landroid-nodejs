@@ -49,6 +49,7 @@ class Landroids {
  */
 class LocalLandroid {
   constructor(config) {
+    this.name = config.name;
     this.landroidUrl = config.url;
     this.pinCode = config.pinCode;
   }
@@ -134,7 +135,7 @@ class LocalLandroid {
           console.log("  Landroid status: " + JSON.stringify(status));
 
           if(self.updateListener)
-            self.updateListener(status);
+            self.updateListener(status, self);
         }
         catch (e) { // Error JSON parsing
           console.error(e.message);
@@ -145,12 +146,12 @@ class LocalLandroid {
 
       console.error("Error communicating with Landroid!");
       if(self.updateListener)
-        self.updateListener(null);
+        self.updateListener(null, self);
 
     }).on('timeout', () => {
       console.error("Timeout communicating with Landroid!");
       if(self.updateListener)
-        self.updateListener(null);
+        self.updateListener(null, self);
     });
   }
 

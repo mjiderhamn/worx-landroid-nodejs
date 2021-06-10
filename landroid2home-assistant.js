@@ -1,4 +1,4 @@
-var config = require('./config'); // Read configuration
+const config = require('./config'); // Read configuration
 
 // Import project modules
 const Landroids = require('./landroid');

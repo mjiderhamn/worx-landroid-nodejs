@@ -1,4 +1,4 @@
-var config = require('./config'); // Read configuration
+const config = require('./config'); // Read configuration
 
 // Import project modules
 const Landroids = require('./landroid');
@@ -10,8 +10,8 @@ const domoticz = new Domoticz(config);
 
 const mqttBrokerUrl = config.mqttBrokerUrl;
 if(mqttBrokerUrl && mqttBrokerUrl.indexOf("//") > 0) {
-  var address = mqttBrokerUrl.substring(mqttBrokerUrl.indexOf("//") + 2);
-  var port = 1883; // Assume default MQTT port
+  let address = mqttBrokerUrl.substring(mqttBrokerUrl.indexOf("//") + 2);
+  let port = 1883; // Assume default MQTT port
   if(address.indexOf(":") > 0) {
     var colon = address.indexOf(":");
     port = parseInt(address.substring(colon + 1));

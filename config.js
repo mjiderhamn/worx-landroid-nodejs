@@ -7,6 +7,9 @@ module.exports = {
 
   localLandroids:  [
     {
+      /** If you have multiple Landroids, you will want to give them unique names*/
+      name: "My Landroid",
+
       /** The PIN code to your Landroid */
       pinCode: "YOUR PIN CODE", // <---- MUST ALWAYS BE EDITED!!!
 
