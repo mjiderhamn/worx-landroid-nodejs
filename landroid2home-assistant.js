@@ -1,16 +1,16 @@
 var config = require('./config'); // Read configuration
 
 // Import project modules
-var Landroid = require('./landroid');
-var LandroidState = Landroid.LandroidState;
-var HomeAssistant = require('./home-assistant');
+const Landroids = require('./landroid');
+const LandroidState = Landroids.LandroidState;
+const HomeAssistant = require('./home-assistant');
 
-var homeAssistant = new HomeAssistant(config);
+const homeAssistant = new HomeAssistant(config);
 
-var landroid = new Landroid(config);
-  
+const landroids = new Landroids(config);
+
 console.log("Scheduling polling");
-landroid.pollEvery(60, function(status) { // Poll every 60 seconds
+landroids.pollEvery(60, function(status) { // Poll every 60 seconds
   if(status) { // We got some data back from the Landroid
     // Send data to Home Assistant
     homeAssistant.setNoOfAlarms(status.noOfAlarms);

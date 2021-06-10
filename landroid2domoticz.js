@@ -1,14 +1,14 @@
 var config = require('./config'); // Read configuration
 
 // Import project modules
-var Landroid = require('./landroid');
-var LandroidState = Landroid.LandroidState;
-var Domoticz = require('./domoticz');
-var AlertLevel = Domoticz.AlertLevel;
+const Landroids = require('./landroid');
+const LandroidState = Landroids.LandroidState;
+const Domoticz = require('./domoticz');
+const AlertLevel = Domoticz.AlertLevel;
 
-var domoticz = new Domoticz(config);
+const domoticz = new Domoticz(config);
 
-var mqttBrokerUrl = config.mqttBrokerUrl;
+const mqttBrokerUrl = config.mqttBrokerUrl;
 if(mqttBrokerUrl && mqttBrokerUrl.indexOf("//") > 0) {
   var address = mqttBrokerUrl.substring(mqttBrokerUrl.indexOf("//") + 2);
   var port = 1883; // Assume default MQTT port
@@ -26,13 +26,13 @@ else
 domoticz.initDevices(function() { // Detect or auto create devices
   
   console.info("You can now navigate to " + config.domoticzUrl + "/#/Utility to see your Landroid status");
-  
-  var landroid = new Landroid(config);
-  
+
+  const landroids = new Landroids(config);
+
   domoticz.connect(function () { // Connect to MQTT
 
     console.log("Scheduling polling");
-    landroid.pollEvery(60, function(status) { // Poll every 60 seconds
+    landroids.pollEvery(60, function(status) { // Poll every 60 seconds
       if(status) { // We got some data back from the Landroid
         // Send data to Domoticz
         domoticz.setNoOfAlarms(status.noOfAlarms);

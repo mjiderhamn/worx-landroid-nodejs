@@ -1,9 +1,9 @@
 var config = require('./config'); // Read configuration
 
 // Import project modules
-var Landroid = require('./landroid');
+const Landroids = require('./landroid');
 
-var landroid = new Landroid(config);
+const landroids = new Landroids(config);
 
 const {InfluxDB, Point} = require('@influxdata/influxdb-client')
 
@@ -13,8 +13,8 @@ const client = new InfluxDB({
 })
 
 console.log("Scheduling polling");
-landroid.pollEvery(60, function(status) { // Poll every 60 seconds
-  if(status) { // We got some data back from the Landroid
+landroids.pollEvery(60, function(status) { // Poll every 60 seconds
+  if(status) { // We got some data back from the Landroids
     // console.info(JSON.stringify(status));
 
     // Send data to InfluxDB
@@ -22,7 +22,7 @@ landroid.pollEvery(60, function(status) { // Poll every 60 seconds
     // writeApi.useDefaultTags({host: 'host1'})
 
     const point = new Point('landroid')
-        .tag("mower", "My Landroid") // TODO Turn into configuration
+        .tag("mower", "My Landroids") // TODO Turn into configuration
         .intField('no_of_alarms', status.noOfAlarms)
         .intField('battery_percent', status.batteryPercentage)
         .intField('total_mowing_hours', status.totalMowingHours)
