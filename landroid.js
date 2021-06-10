@@ -2,10 +2,9 @@
   This module handles the communication with the Worx Landroid robotic mower
  */
 
-// https://github.com/najaxjs/najax
-var najax = require('najax');
+const http = require('http');
 
-var LandroidState = {
+const LandroidState = {
   CHARGING: "Charging",
   CHARGING_COMPLETE: "Charging complete",
   MOWING: "Mowing",
@@ -15,9 +14,9 @@ var LandroidState = {
   ERROR: "Error"
 };
 
-var WIRE_BOUNCED_ALARM_INDEX = 2;
+const WIRE_BOUNCED_ALARM_INDEX = 2;
 
-var ERROR_MESSAGES = [];
+const ERROR_MESSAGES = [];
 ERROR_MESSAGES[0] = "Blade blocked";
 ERROR_MESSAGES[1] = "Repositioning error";
 ERROR_MESSAGES[WIRE_BOUNCED_ALARM_INDEX] = "Wire bounced";
@@ -44,85 +43,107 @@ function Landroid(config) {
 
 Landroid.prototype.doPollStatus = function() {
   console.log("About to poll Landroid at " + this.landroidUrl + " for status");
-  
-  var self = this;
-  
-  najax({
-        url: this.landroidUrl + "/jsondata.cgi",
-        dataType: "json", // will be "application/json" in version najax 0.2.0
-        username: "admin",
-        password: this.pinCode,
-        success: function(response) {
-          var status = null;
-          if(response) {
-            if(! response.allarmi) { // Response is not what we expected
-              console.error("Make sure your pin code is correct!");
-            }
-            else {
-              status = {
-                state: null,
-                errorMessage: null,
 
-                batteryPercentage: null,
-                totalMowingHours: null,
-                noOfAlarms: null
-              };
-              
-              status.batteryPercentage = response.perc_batt;
-              // console.log("Response from Landroid, batteryPercentage: " + batteryPercentage);
-              status.workingTimePercent = response.percent_programmatore;
-              
-              var totalMowingHours = parseInt(response.ore_movimento);
-              if(! isNaN(totalMowingHours)) {
-                status.totalMowingHours = totalMowingHours / 10;  // Provided as 0,1 h 
+  const self = this;
+
+  http.get(this.landroidUrl + "/jsondata.cgi", {
+    auth: "admin:" + this.pinCode,
+    // method: 'POST', // TODO ?
+    // headers: {
+    //   'Content-Type': 'application/json'
+    // },
+    timeout: 10 * 1000 // 10 s
+  }, (res) => {
+    const { statusCode } = res;
+
+    let success = statusCode === 200;
+    if(! success) {
+      console.log(`HTTP status: ${res.statusCode}`);
+      console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+      // Consume response data to free up memory
+      res.resume();
+    }
+    res.setEncoding('utf8'); // TODO
+
+    let rawData = '';
+    res.on('data', (chunk) => { rawData += chunk; });
+    res.on('end', () => {
+      try {
+        const response = JSON.parse(rawData);
+
+        let status = null;
+        if(response) {
+          if(! response.allarmi) { // Response is not what we expected
+            console.error("Make sure your pin code is correct!");
+          }
+          else {
+            status = {
+              state: null,
+              errorMessage: null,
+
+              batteryPercentage: response.perc_batt,
+              totalMowingHours: null,
+              noOfAlarms: countAlarms(response.allarmi),
+              workingTimePercent: response.percent_programmatore
+            };
+
+            const totalMowingHours = parseInt(response.ore_movimento);
+            if(! isNaN(totalMowingHours)) {
+              status.totalMowingHours = totalMowingHours / 10;  // Provided as 0,1 h
+            }
+
+            if(status.noOfAlarms > 0) {
+              status.state = LandroidState.ALARM;
+              status.errorMessage = alertArrayToMessage(response.allarmi);
+            }
+            else { // There were no alarms
+              if(response.settaggi[14]) {
+                status.state = LandroidState.MANUAL_STOP;
               }
-  
-              status.noOfAlarms = countAlarms(response.allarmi);
-              if(status.noOfAlarms > 0) {
-                status.state = LandroidState.ALARM;
-                status.errorMessage = alertArrayToMessage(response.allarmi);
+              else if(response.settaggi[5] && ! response.settaggi[13]) {
+                status.state = LandroidState.CHARGING;
               }
-              else { // There were no alarms
-                if(response.settaggi[14]) {
-                  status.state = LandroidState.MANUAL_STOP;
-                }
-                else if(response.settaggi[5] && ! response.settaggi[13]) {
-                  status.state = LandroidState.CHARGING;
-                }
-                else if(response.settaggi[5] && response.settaggi[13]) {
-                  status.state = LandroidState.CHARGING_COMPLETE;
-                }
-                else if(response.settaggi[15]) {
-                  status.state = LandroidState.GOING_HOME;
-                }
-                else
-                  status.state = LandroidState.MOWING;
+              else if(response.settaggi[5] && response.settaggi[13]) {
+                status.state = LandroidState.CHARGING_COMPLETE;
               }
-              
-              
+              else if(response.settaggi[15]) {
+                status.state = LandroidState.GOING_HOME;
+              }
+              else
+                status.state = LandroidState.MOWING;
             }
           }
-          else
-            console.error("No response!");
-          
-          console.log("  Landroid status: " + JSON.stringify(status));
-
-          if(self.updateListener)
-            self.updateListener(status);
-        },
-        error: function (response) {
-          console.error("Error communicating with Landroid!");
-          if(self.updateListener)
-            self.updateListener(null);
         }
-    });  
+        else
+          console.error("No response!");
+
+        console.log("  Landroid status: " + JSON.stringify(status));
+
+        if(self.updateListener)
+          self.updateListener(status);
+      } catch (e) { // Error JSON parsing
+        console.error(e.message);
+      }
+    });
+  }).on('error', (e) => {
+    console.error(`Problem with request: ${e.message}`);
+
+    console.error("Error communicating with Landroid!");
+    if(self.updateListener)
+      self.updateListener(null);
+
+  }).on('timeout', () => {
+    console.error("Timeout communicating with Landroid!");
+    if(self.updateListener)
+      self.updateListener(null);
+  });
 };
 
 /** Get alert messages from array of flags */
 function alertArrayToMessage(arr) {
-  var output = "";
+  let output = "";
   if(arr && arr.length > 0) {
-    for(var i = 0; i < arr.length; i++) {
+    for(let i = 0; i < arr.length; i++) {
       if(arr[i] && i != WIRE_BOUNCED_ALARM_INDEX) { // There was an alert (ignore wire bounce)
         var errorMessage = ERROR_MESSAGES[i];
         if(errorMessage) {
@@ -139,9 +160,9 @@ function alertArrayToMessage(arr) {
 
 /** Is there any alert in the provided array? */
 function countAlarms(arr) {
-  var output = 0;
+  let output = 0;
   if(arr) {
-    for(var i = 0; i < arr.length; i++) { // Length should be 32
+    for(let i = 0; i < arr.length; i++) { // Length should be 32
       if(i != WIRE_BOUNCED_ALARM_INDEX) { // Ignore wire bounce
         output += arr[i];
       }
@@ -158,7 +179,7 @@ function countAlarms(arr) {
 Landroid.prototype.pollEvery = function (seconds, updateListener) {
   this.updateListener = updateListener;
   this.doPollStatus(); // First poll immediately
-  var self = this;
+  const self = this;
   setInterval(function() { self.doPollStatus() }, seconds * 1000);
 };
 

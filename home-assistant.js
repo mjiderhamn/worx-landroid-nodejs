@@ -1,7 +1,7 @@
 /** Module for communicating with Home Assistant API, see https://home-assistant.io/developers/rest_api.html */
 
 // https://github.com/najaxjs/najax
-var najax = require('najax');
+var najax = require('najax'); // TODO Replace with http
 
 var COMPONENT_PREFIX = "landroid.";
 

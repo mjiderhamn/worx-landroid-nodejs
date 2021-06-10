@@ -10,7 +10,7 @@ var mqttOpts = {
 };
 
 // https://github.com/najaxjs/najax
-var najax = require('najax');
+var najax = require('najax'); // TODO Replace with http
 
 var MQTT_HARDWARE = 43;
     
